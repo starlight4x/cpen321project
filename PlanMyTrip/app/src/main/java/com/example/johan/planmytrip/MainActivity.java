@@ -8,17 +8,26 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class MainActivity extends AppCompatActivity {
+
+    public TextView text_view;
+    public JSONObject responseJSON;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,37 +47,71 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        text_view = (TextView) this.findViewById(R.id.text_field);
+        text_view.setText("Blabla");
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "http://api.translink.ca/rttiapi/v1/routes/351?apikey=1Y8IBRRxW0yYIhxyWswH";
 
-        TextView etName = (TextView) this.findViewById(R.id.text_field);
-        etName.setText("Blabla");
-        DefaultHttpClient   httpclient = new DefaultHttpClient(new BasicHttpParams());
-        HttpPost httppost = new HttpPost(someJSONUrl/jsonWebService);
-// Depends on your web service
-        httppost.setHeader("Content-type", "application/json");
-
-        InputStream inputStream = null;
-        String result = null;
-        try {
-            HttpResponse response = httpclient.execute(httppost);
-            HttpEntity entity = response.getEntity();
-
-            inputStream = entity.getContent();
-            // json is UTF-8 by default
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
-            StringBuilder sb = new StringBuilder();
-
-            String line = null;
-            while ((line = reader.readLine()) != null)
-            {
-                sb.append(line + "\n");
+        Response.Listener<JSONObject> myResponseListener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                text_view.setText("Response is: " + response.toString());
+                responseJSON = response;
             }
-            result = sb.toString();
-        } catch (Exception e) {
-            // Oops
-        }
-        finally {
-            try{if(inputStream != null)inputStream.close();}catch(Exception squish){}
-        }
+        };
+
+        Response.ErrorListener myErrorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                text_view.setText("That didn't work!");
+            }
+        };
+
+
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null,myResponseListener,myErrorListener)
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/JSON");
+                return params;
+            }
+
+        };
+
+        queue.add(jsonRequest);
+
+        /*  STRING REQUEST
+        // Request a string response from the provided URL.
+       StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        text_view.setText("Response is: "+ response);
+
+                    }
+                }, new Response.ErrorListener() {
+                @Override
+                 public void onErrorResponse(VolleyError error) {
+                    text_view.setText("That didn't work!");
+            }
+        }){
+
+           @Override
+           public Map<String, String> getHeaders() throws AuthFailureError {
+               Map<String,String> params =  new HashMap<>();
+               params.put("Content-Type","application/JSON");
+               //..add other headers
+               return params;
+           }
+
+       };
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
+
+*/
 
 
     }
@@ -94,4 +137,5 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }
