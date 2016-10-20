@@ -15,9 +15,11 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -51,68 +53,9 @@ public class MainActivity extends AppCompatActivity {
         text_view.setText("Blabla");
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://api.translink.ca/rttiapi/v1/routes/351?apikey=1Y8IBRRxW0yYIhxyWswH";
+        String url = "http://api.translink.ca/rttiapi/v1/stops/60980/estimates?apikey=1Y8IBRRxW0yYIhxyWswH";
 
-        Response.Listener<JSONObject> myResponseListener = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                text_view.setText("Response is: " + response.toString());
-                responseJSON = response;
-            }
-        };
-
-        Response.ErrorListener myErrorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                text_view.setText("That didn't work!");
-            }
-        };
-
-
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null,myResponseListener,myErrorListener)
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/JSON");
-                return params;
-            }
-
-        };
-
-        queue.add(jsonRequest);
-
-        /*  STRING REQUEST
-        // Request a string response from the provided URL.
-       StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        text_view.setText("Response is: "+ response);
-
-                    }
-                }, new Response.ErrorListener() {
-                @Override
-                 public void onErrorResponse(VolleyError error) {
-                    text_view.setText("That didn't work!");
-            }
-        }){
-
-           @Override
-           public Map<String, String> getHeaders() throws AuthFailureError {
-               Map<String,String> params =  new HashMap<>();
-               params.put("Content-Type","application/JSON");
-               //..add other headers
-               return params;
-           }
-
-       };
-// Add the request to the RequestQueue.
-        queue.add(stringRequest);
-
-*/
-
+        myJSONObjectRequest(url);
 
     }
 
@@ -136,6 +79,89 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public void myJSONObjectRequest(String url){
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        Response.Listener<JSONObject> myResponseListener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                text_view.setText("Response is: " + response.toString());
+                responseJSON = response;
+            }
+        };
+
+        Response.ErrorListener myErrorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                text_view.setText("That didn't work! " + error.toString());
+            }
+        };
+
+
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null,myResponseListener,myErrorListener)
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/JSON");
+                return params;
+            }
+
+        };
+
+        queue.add(jsonRequest);
+
+
+    }
+
+
+    public void myJSONArrayRequest(String url){
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        Response.Listener<JSONArray> myResponseListener = new Response.Listener<JSONArray>()
+        {
+
+            @Override
+            public void onResponse(JSONArray response) {
+                text_view.setText("Response is: " + response.toString());
+
+
+            }
+
+        };
+        Response.ErrorListener myErrorListener = new Response.ErrorListener()
+        {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // TODO Auto-generated method stub
+                text_view.setText("That didn't work! " + error.toString());
+
+            }
+
+        };
+
+
+
+        JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, url, null,myResponseListener,myErrorListener)
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/JSON");
+                return params;
+            }
+
+        };
+
+        queue.add(jsonRequest);
+
+
     }
 
 }
