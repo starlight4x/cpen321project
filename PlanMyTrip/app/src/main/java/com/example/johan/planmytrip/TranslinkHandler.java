@@ -1,27 +1,30 @@
 package com.example.johan.planmytrip;
 
-        import android.content.Intent;
-        import android.support.v7.app.AppCompatActivity;
 
-        import com.android.volley.AuthFailureError;
-        import com.android.volley.Request;
-        import com.android.volley.RequestQueue;
-        import com.android.volley.Response;
-        import com.android.volley.VolleyError;
-        import com.android.volley.toolbox.JsonArrayRequest;
-        import com.android.volley.toolbox.JsonObjectRequest;
-        import com.android.volley.toolbox.Volley;
+import android.support.v7.app.AppCompatActivity;
 
-        import org.json.JSONArray;
-        import org.json.JSONException;
-        import org.json.JSONObject;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
-        import java.util.ArrayList;
-        import java.util.HashMap;
-        import java.util.Map;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class TranslinkHandler extends AppCompatActivity{
+/**
+ * Created by johan on 20.10.2016.
+ */
+
+public class TranslinkHandler {
 
 
     private AppCompatActivity context;
@@ -31,12 +34,9 @@ public class TranslinkHandler extends AppCompatActivity{
         this.context = activity;
     }
 
-    public void getNextBuses(){
+    public void getNextBuses(int stopNo){
 
-       // Intent intent = getIntent();
-       // String url = intent.getStringExtra(MainActivity.MESSAGE);
-
-        String url = "http://api.translink.ca/rttiapi/v1/stops/60980/estimates?apikey=1Y8IBRRxW0yYIhxyWswH";
+        String url = "http://api.translink.ca/rttiapi/v1/stops/"+ String.valueOf(stopNo) + "/estimates?apikey=1Y8IBRRxW0yYIhxyWswH";
         myJSONArrayRequest(url, 1);
 
     }
@@ -47,6 +47,13 @@ public class TranslinkHandler extends AppCompatActivity{
         myJSONArrayRequest(url, 2);
 
     }
+
+    public void getStopsForRoute() {
+        String url = "http://api.translink.ca/rttiapi/v1/routes/351?apikey=1Y8IBRRxW0yYIhxyWswH";
+        myJSONObjectRequest(url, 3);
+
+    }
+
 
     private void getNearestStopsReturned(JSONArray response, String errorMsg){
         System.out.print(response.toString());
@@ -80,15 +87,17 @@ public class TranslinkHandler extends AppCompatActivity{
 
 
     }
+
     private void getNextBusesReturned(JSONArray response, String errorMsg){
 
         if (errorMsg == null) {
-            ArrayList<String> nextBuses = new ArrayList<String>();
+            ArrayList<Bus> nextBuses = new ArrayList<Bus>();
             for (int i = 0; i < response.length(); i++) {
                 JSONObject jsonobject;
                 try {
                     jsonobject = response.getJSONObject(i);
                     String routeNo = jsonobject.getString("RouteNo");
+                    String routeName = jsonobject.getString("RouteName");
                     JSONArray busArray = jsonobject.getJSONArray("Schedules");
                     for (int j = 0; j <1; j++) {
                         JSONObject jsonobjectBusInfo;
@@ -96,8 +105,8 @@ public class TranslinkHandler extends AppCompatActivity{
                             jsonobjectBusInfo = busArray.getJSONObject(j);
                             String destination = jsonobjectBusInfo.getString("Destination");
                             String expectedLeaveTime = jsonobjectBusInfo.getString("ExpectedLeaveTime");
-                            String resultString = routeNo +" " + destination + " " + expectedLeaveTime;
-                            nextBuses.add(resultString);
+                            Bus bus = new Bus(routeName,Integer.parseInt(routeNo),expectedLeaveTime,destination);
+                            nextBuses.add(bus);
 
                         } catch (JSONException e) {
                             System.out.print("Error parsing JSONArray" + e.toString());
@@ -112,6 +121,7 @@ public class TranslinkHandler extends AppCompatActivity{
             }
 
             System.out.print(nextBuses.toString());
+
             ((TranslinkUI)context).nextBusesQueryReturned(nextBuses, null);
 
 
@@ -124,6 +134,11 @@ public class TranslinkHandler extends AppCompatActivity{
 
     }
 
+    private void getStopsForRouteReturned(JSONObject response, String errorMsg){
+        System.out.printf(response.toString());
+        ((TranslinkUI)context).routeStopsQueryReturned(response.toString(), null);
+
+    }
 
 
     private void translinkRequestResponded(int inputID, JSONArray jsonArray, JSONObject jsonObject, String errorMsg){
@@ -135,7 +150,9 @@ public class TranslinkHandler extends AppCompatActivity{
             case 2:
                 getNearestStopsReturned(jsonArray,errorMsg);
                 //System.out.print("hallellef" + jsonArray.toString());
-
+                break;
+            case 3:
+                getStopsForRouteReturned(jsonObject,errorMsg);
                 break;
             default: break;
         }

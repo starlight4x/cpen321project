@@ -71,11 +71,19 @@ public class TranslinkUI extends AppCompatActivity {
         nearestStops.add("Loading...");
 
         text_view.setText(nearestStops.toString());
-        new TranslinkHandler(this).getNextBuses();
+        new TranslinkHandler(this).getNextBuses(12345);
         //getNextBuses();
 
     }
 
+    public void routeStopsQueryReturned(String result, String errorMsg){
+        if(errorMsg != null){
+            text_view.setText(errorMsg);
+        }
+        else {
+            text_view.setText(result);
+        }
+    }
 
     public void nearestStopsQueryReturned(ArrayList<String> result, String errorMsg){
         if(errorMsg != null){
@@ -86,7 +94,7 @@ public class TranslinkUI extends AppCompatActivity {
         }
     }
 
-    public void nextBusesQueryReturned(ArrayList<String> result, String errorMsg){
+    public void nextBusesQueryReturned(ArrayList<Bus> result, String errorMsg){
         if(errorMsg != null){
             text_view.setText(errorMsg);
         }
