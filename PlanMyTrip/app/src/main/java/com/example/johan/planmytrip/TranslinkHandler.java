@@ -1,30 +1,27 @@
 package com.example.johan.planmytrip;
 
+        import android.content.Intent;
+        import android.support.v7.app.AppCompatActivity;
 
-import android.support.v7.app.AppCompatActivity;
+        import com.android.volley.AuthFailureError;
+        import com.android.volley.Request;
+        import com.android.volley.RequestQueue;
+        import com.android.volley.Response;
+        import com.android.volley.VolleyError;
+        import com.android.volley.toolbox.JsonArrayRequest;
+        import com.android.volley.toolbox.JsonObjectRequest;
+        import com.android.volley.toolbox.Volley;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+        import org.json.JSONArray;
+        import org.json.JSONException;
+        import org.json.JSONObject;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+        import java.util.ArrayList;
+        import java.util.HashMap;
+        import java.util.Map;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-/**
- * Created by johan on 20.10.2016.
- */
-
-public class TranslinkHandler {
+public class TranslinkHandler extends AppCompatActivity{
 
 
     private AppCompatActivity context;
@@ -35,6 +32,9 @@ public class TranslinkHandler {
     }
 
     public void getNextBuses(){
+
+       // Intent intent = getIntent();
+       // String url = intent.getStringExtra(MainActivity.MESSAGE);
 
         String url = "http://api.translink.ca/rttiapi/v1/stops/60980/estimates?apikey=1Y8IBRRxW0yYIhxyWswH";
         myJSONArrayRequest(url, 1);
@@ -68,13 +68,13 @@ public class TranslinkHandler {
             }
 
             System.out.print(nearestStops.toString());
-            ((MainActivity)context).nearestStopsQueryReturned(nearestStops, null);
+            ((TranslinkUI)context).nearestStopsQueryReturned(nearestStops, null);
 
 
 
         }
         else{
-            ((MainActivity)context).nearestStopsQueryReturned(null, errorMsg);
+            ((TranslinkUI)context).nearestStopsQueryReturned(null, errorMsg);
 
         }
 
@@ -112,13 +112,13 @@ public class TranslinkHandler {
             }
 
             System.out.print(nextBuses.toString());
-            ((MainActivity)context).nextBusesQueryReturned(nextBuses, null);
+            ((TranslinkUI)context).nextBusesQueryReturned(nextBuses, null);
 
 
 
         }
         else{
-            ((MainActivity)context).nextBusesQueryReturned(null, errorMsg);
+            ((TranslinkUI)context).nextBusesQueryReturned(null, errorMsg);
 
         }
 

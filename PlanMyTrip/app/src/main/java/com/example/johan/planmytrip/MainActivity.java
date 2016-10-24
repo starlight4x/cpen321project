@@ -1,106 +1,68 @@
 package com.example.johan.planmytrip;
 
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.os.Bundle;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import com.example.johan.planmytrip.R;
+import com.example.johan.planmytrip.TranslinkHandler;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView text_view;
-    private EditText text_input1;
-    private ArrayList<String> nextBuses;
-    private ArrayList<String> nearestStops;
-
-
+    public final static String MESSAGE = "hi";
+    public final static String send = "";
+    public final static String initial = "http://api.translink.ca/rttiapi/v1/stops/";
+    public final static String ending = "/estimates?apikey=1Y8IBRRxW0yYIhxyWswH";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+    }
 
-        text_view = (TextView) this.findViewById(R.id.text_field);
-        text_input1 = (EditText) this.findViewById(R.id.text_input1);
-        //text_view.setText("Blabla");
-        nearestStops = new ArrayList<String>();
-        nearestStops.add("Loading...");
+    public void busStopNumber(View view){
 
-        text_view.setText(nearestStops.toString());
-        new TranslinkHandler(this).getNearestStops();
-        //getNextBuses();
+        EditText editText = (EditText) findViewById(R.id.busStopNumber);
+        String message1 = editText.getText().toString();
+
+        if(message1.length() == 5 && isInteger(message1)){
+            Intent intent = new Intent(this, TranslinkUI.class);
+            //Intent intent1 = new Intent(this, TranslinkHandler.class);
+            //String message = initial + message1 + ending;
+            //intent1.putExtra(MESSAGE, message);
+            startActivity(intent);
+        }
+
+        else{
+            Context context = getApplicationContext();
+            CharSequence text = "INVALID BUS STOP NUMBER";
+            int duration = Toast.LENGTH_SHORT;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+        }
 
     }
 
+    public boolean isInteger(String a){
 
-    public void nearestStopsQueryReturned(ArrayList<String> result, String errorMsg){
-        if(errorMsg != null){
-            text_view.setText(errorMsg);
+        int counter = 0;
+
+        for(int i = 0; i < a.length(); i++){
+
+            if(a.charAt(0) >= 0 || a.charAt(0) <= 9 ){
+                counter++;
+                continue;
+            }
+            else
+                return  false;
         }
-        else {
-            text_view.setText(result.toString());
-        }
+
+        if(counter == a.length())   return true;
+        else        return false;
     }
-
-    public void nextBusesQueryReturned(ArrayList<String> result, String errorMsg){
-        if(errorMsg != null){
-            text_view.setText(errorMsg);
-        }
-        else {
-            text_view.setText(result.toString());
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
 }
