@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(message1.length() == 5 && isInteger(message1)){
             Intent intent = new Intent(this, TranslinkUI.class);
+            intent.putExtra("busStopNo",message1);
             //Intent intent1 = new Intent(this, TranslinkHandler.class);
             //String message = initial + message1 + ending;
             //intent1.putExtra(MESSAGE, message);

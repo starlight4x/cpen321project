@@ -34,9 +34,9 @@ public class TranslinkHandler {
         this.context = activity;
     }
 
-    public void getNextBuses(int stopNo){
+    public void getNextBuses(String stopNo){
 
-        String url = "http://api.translink.ca/rttiapi/v1/stops/"+ String.valueOf(stopNo) + "/estimates?apikey=1Y8IBRRxW0yYIhxyWswH";
+        String url = "http://api.translink.ca/rttiapi/v1/stops/"+ stopNo + "/estimates?apikey=1Y8IBRRxW0yYIhxyWswH";
         myJSONArrayRequest(url, 1);
 
     }

@@ -5,6 +5,7 @@ package com.example.johan.planmytrip;
  */
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -70,8 +71,11 @@ public class TranslinkUI extends AppCompatActivity {
         nearestStops = new ArrayList<String>();
         nearestStops.add("Loading...");
 
+        Intent myIntent = getIntent(); // gets the previously created intent
+        String stopNo = myIntent.getStringExtra("busStopNo"); // will return "FirstKeyValue"
+
         text_view.setText(nearestStops.toString());
-        new TranslinkHandler(this).getNextBuses(12345);
+        new TranslinkHandler(this).getNextBuses(stopNo);
         //getNextBuses();
 
     }
