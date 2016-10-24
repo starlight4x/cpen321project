@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -45,15 +46,15 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 public class TranslinkUI extends AppCompatActivity {
 
     private TextView text_view;
-    private EditText text_input1;
-    private ArrayList<String> nextBuses;
-    private ArrayList<String> nearestStops;
+    private ArrayList<Bus> nextBuses;
+    private ListView listView;
 
 
     @Override
@@ -62,21 +63,19 @@ public class TranslinkUI extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.translinkui_activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
       //  setSupportActionBar(toolbar);
 
         text_view = (TextView) this.findViewById(R.id.text_field);
-        text_input1 = (EditText) this.findViewById(R.id.text_input1);
-        //text_view.setText("Blabla");
-        nearestStops = new ArrayList<String>();
-        nearestStops.add("Loading...");
 
         Intent myIntent = getIntent(); // gets the previously created intent
         String stopNo = myIntent.getStringExtra("busStopNo"); // will return "FirstKeyValue"
 
-        text_view.setText(nearestStops.toString());
+        text_view.setText("Loading..");
         new TranslinkHandler(this).getNextBuses(stopNo);
-        //getNextBuses();
+
+        listView = (ListView) findViewById(R.id.list_view);
+
 
     }
 
@@ -103,14 +102,31 @@ public class TranslinkUI extends AppCompatActivity {
             text_view.setText(errorMsg);
         }
         else {
-            text_view.setText(result.toString());
+            nextBuses = result;
+            ArrayAdapter<Bus> arrayAdapter = new ArrayAdapter<Bus>(
+                    this,
+                    android.R.layout.simple_list_item_1,
+                    nextBuses );
+
+            listView.setAdapter(arrayAdapter);
+
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    return true;
+                }
+            });
+
+            text_view.setText("");
+
+
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        //getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 

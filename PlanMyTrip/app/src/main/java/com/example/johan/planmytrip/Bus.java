@@ -38,11 +38,6 @@ public class Bus
 
     @Override
     public String toString() {
-        return "Bus{" +
-                "routeName='" + routeName + '\'' +
-                ", busNo=" + busNo +
-                ", estimatedLeaveTime='" + estimatedLeaveTime + '\'' +
-                ", destination='" + destination + '\'' +
-                '}';
+        return  busNo + " " + routeName + " " + estimatedLeaveTime + " " + destination;
     }
 }
