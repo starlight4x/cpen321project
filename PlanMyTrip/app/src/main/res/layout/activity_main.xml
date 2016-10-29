@@ -16,36 +16,8 @@
         android:minHeight="?attr/actionBarSize"
         android:id="@+id/toolbar" />
 
-    <EditText
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/busStopNumber"
-        android:hint="EnterStartingStop"
-        android:layout_width="150dp"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/done1"
-        android:layout_toStartOf="@+id/done1"
-        android:layout_marginRight="23dp"
-        android:layout_marginEnd="23dp"
-        android:textColorLink="#FFDA24"
-        android:backgroundTint="#FFDA24"
-        android:textCursorDrawable="@null" />
-
-    <Button
-        android:text="NEXT "
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/done1"
-        android:onClick="busStopNumber"
-        android:layout_marginRight="61dp"
-        android:layout_marginEnd="61dp"
-        android:layout_alignTop="@+id/busStopNumber"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
     <TextView
-        android:text="PlanMyTrip"
+        android:text="Time Your Trip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView2"
@@ -54,6 +26,34 @@
         android:textSize="30sp"
         android:textAllCaps="false"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_alignBottom="@+id/toolbar" />
+
+    <Button
+        android:text="NEXT "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/done1"
+        android:onClick="busStopNumber"
+        android:layout_alignTop="@+id/busStopNumber"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@+id/busStopNumber"
+        android:layout_marginEnd="60dp" />
+
+    <EditText
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/busStopNumber"
+        android:hint="EnterStartingStop"
+        android:layout_width="150dp"
+        android:textColorLink="#FFDA24"
+        android:backgroundTint="#FFDA24"
+        android:textCursorDrawable="@null"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/done1"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="60dp" />
 
 </RelativeLayout>
