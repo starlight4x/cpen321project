@@ -52,8 +52,6 @@
         android:backgroundTint="#FFDA24"
         android:textCursorDrawable="@null"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/done1"
-        android:layout_marginEnd="15dp"
-        android:layout_marginStart="60dp" />
+        android:layout_toLeftOf="@+id/done1" />
 
 </RelativeLayout>
