@@ -38,6 +38,6 @@ public class Bus
 
     @Override
     public String toString() {
-        return  busNo + " " + routeName + " " + estimatedLeaveTime + " " + destination;
+        return  busNo + " " + destination + "          " + estimatedLeaveTime ;
     }
 }
