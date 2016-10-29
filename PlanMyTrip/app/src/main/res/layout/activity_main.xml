@@ -5,45 +5,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.johan.planmytrip.MainActivity"
-    android:backgroundTint="@android:color/holo_blue_bright"
-    android:background="@android:color/holo_blue_bright">
+    android:background="#edeeef">
 
 
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="#0649B6"
         android:theme="?attr/actionBarTheme"
         android:minHeight="?attr/actionBarSize"
         android:id="@+id/toolbar" />
 
-    <TextView
-        android:text="PlanMyTrip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView2"
-        android:textSize="30sp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignBottom="@+id/toolbar"
-        android:layout_alignParentTop="true"
-        android:textAlignment="center"
-        android:textColor="@android:color/background_light" />
-
     <EditText
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
         android:id="@+id/busStopNumber"
-        android:hint="EnterBusStopNumber"
-        android:layout_marginRight="71dp"
-        android:layout_marginEnd="71dp"
+        android:hint="EnterStartingStop"
+        android:layout_width="150dp"
         android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_toLeftOf="@+id/done1"
+        android:layout_toStartOf="@+id/done1"
+        android:layout_marginRight="23dp"
+        android:layout_marginEnd="23dp"
+        android:textColorLink="#FFDA24"
+        android:backgroundTint="#FFDA24"
+        android:textCursorDrawable="@null" />
 
     <Button
         android:text="NEXT "
@@ -51,8 +38,22 @@
         android:layout_height="wrap_content"
         android:id="@+id/done1"
         android:onClick="busStopNumber"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="196dp" />
+        android:layout_marginRight="61dp"
+        android:layout_marginEnd="61dp"
+        android:layout_alignTop="@+id/busStopNumber"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:text="PlanMyTrip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2"
+        android:textColor="#FFDA24"
+        android:translationY="10dp"
+        android:textSize="30sp"
+        android:textAllCaps="false"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
