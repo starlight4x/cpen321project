@@ -2,6 +2,8 @@ package com.example.johan.planmytrip;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -35,7 +37,18 @@ public class MainActivity extends AppCompatActivity {
             //Intent intent1 = new Intent(this, TranslinkHandler.class);
             //String message = initial + message1 + ending;
             //intent1.putExtra(MESSAGE, message);
-            startActivity(intent);
+            if (isNetworkAvailable()) {
+                startActivity(intent);
+            }
+            else {
+                Context context = getApplicationContext();
+                CharSequence text = "No internet connection";
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+
+            }
         }
 
         else{
@@ -48,6 +61,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager cm = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        // if no network is available networkInfo will be null
+        // otherwise check if we are connected
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
+
 
     public boolean isInteger(String a){
 

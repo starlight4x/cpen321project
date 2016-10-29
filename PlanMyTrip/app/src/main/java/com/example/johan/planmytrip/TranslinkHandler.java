@@ -10,6 +10,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -51,6 +52,14 @@ public class TranslinkHandler {
     public void getStopsForRoute() {
         String url = "http://api.translink.ca/rttiapi/v1/routes/351?apikey=1Y8IBRRxW0yYIhxyWswH";
         myJSONObjectRequest(url, 3);
+
+    }
+
+    public void getEstimatedTimeFromGoogle(String startLatitude, String startLongitude, String destLatitude, String destLongitude,String departureTime) {
+
+        String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="+ startLatitude + "," + startLongitude +"&destinations=" + destLatitude + "," + destLongitude +"&mode=transit&departure_time="+departureTime+"&key=AIzaSyAIKdSYquNCT6LaIAK1iVzv-CxO9HbPzNg";
+        myJSONObjectRequest(url, 4);
+
 
     }
 
@@ -134,6 +143,39 @@ public class TranslinkHandler {
 
     }
 
+    private void getEstimatedTimeFromGoogleReturned(JSONObject response, String errorMsg){
+
+        if (errorMsg == null) {
+            String durationInSeconds = "";
+                try {
+                    JSONArray rows = response.getJSONArray("rows");
+                    JSONObject row0 = rows.getJSONObject(0);
+                    JSONArray elements = row0.getJSONArray("elements");
+                    JSONObject element0 = elements.getJSONObject(0);
+                    JSONObject duration = element0.getJSONObject("duration");
+                    durationInSeconds = duration.getString("value");
+
+
+                } catch (JSONException e) {
+                    System.out.print("Error parsing JSONArray" + e.toString());
+                }
+
+
+            System.out.print("hallo hallo hallo hallo " +durationInSeconds + "!!!!!!");
+
+           // ((TranslinkUI)context).estimatedTimeReturned(durationInSeconds);
+
+
+
+        }
+        else{
+            //((TranslinkUI)context).nextBusesQueryReturned(nextBuses, null);
+
+        }
+
+
+    }
+
     private void getStopsForRouteReturned(JSONObject response, String errorMsg){
         System.out.printf(response.toString());
         ((TranslinkUI)context).routeStopsQueryReturned(response.toString(), null);
@@ -149,10 +191,12 @@ public class TranslinkHandler {
                 break;
             case 2:
                 getNearestStopsReturned(jsonArray,errorMsg);
-                //System.out.print("hallellef" + jsonArray.toString());
                 break;
             case 3:
                 getStopsForRouteReturned(jsonObject,errorMsg);
+                break;
+            case 4:
+                getEstimatedTimeFromGoogleReturned(jsonObject,errorMsg);
                 break;
             default: break;
         }
