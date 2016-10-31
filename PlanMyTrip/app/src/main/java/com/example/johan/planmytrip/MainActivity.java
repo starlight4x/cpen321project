@@ -16,10 +16,11 @@ import com.example.johan.planmytrip.TranslinkHandler;
 
 public class MainActivity extends AppCompatActivity {
 
-    public final static String MESSAGE = "hi";
-    public final static String send = "";
+
     public final static String initial = "http://api.translink.ca/rttiapi/v1/stops/";
     public final static String ending = "/estimates?apikey=1Y8IBRRxW0yYIhxyWswH";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +31,11 @@ public class MainActivity extends AppCompatActivity {
 
         EditText editText = (EditText) findViewById(R.id.busStopNumber);
         String message1 = editText.getText().toString();
+        int sender = 123000;
 
         if(message1.length() == 5 && isInteger(message1)){
+
+            //
             Intent intent = new Intent(this, TranslinkUI.class);
             intent.putExtra("busStopNo",message1);
             //Intent intent1 = new Intent(this, TranslinkHandler.class);
@@ -81,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
         for(int i = 0; i < a.length(); i++){
 
-            if(a.charAt(0) >= 0 || a.charAt(0) <= 9 ){
+            if(Character.getNumericValue(a.charAt(i)) >= 0 && Character.getNumericValue(a.charAt(i)) <= 9 ){
                 counter++;
                 continue;
             }
