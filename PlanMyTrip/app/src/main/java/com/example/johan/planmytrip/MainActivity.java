@@ -17,10 +17,6 @@ import com.example.johan.planmytrip.TranslinkHandler;
 public class MainActivity extends AppCompatActivity {
 
 
-    public final static String initial = "http://api.translink.ca/rttiapi/v1/stops/";
-    public final static String ending = "/estimates?apikey=1Y8IBRRxW0yYIhxyWswH";
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
         EditText editText = (EditText) findViewById(R.id.busStopNumber);
         String message1 = editText.getText().toString();
-        int sender = 123000;
+        int sender = 12000;
 
         if(message1.length() == 5 && isInteger(message1)){
 
@@ -79,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public boolean isInteger(String a){
+    private boolean isInteger(String a){
 
         int counter = 0;
 

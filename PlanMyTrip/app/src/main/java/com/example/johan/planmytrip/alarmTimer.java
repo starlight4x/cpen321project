@@ -3,24 +3,36 @@ package com.example.johan.planmytrip;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+/**
+ * Created by Navjashan on 29.10.2016.
+ */
+
 public class alarmTimer extends AppCompatActivity {
 
+    MediaPlayer mp = new MediaPlayer();
 
     private int totalTime = 10000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_timer);
+
+       // MediaPlayer mp = new MediaPlayer();
+        mp = MediaPlayer.create(this, R.raw.sound);
+
+
         Intent timeIntent  = getIntent();
         totalTime = timeIntent.getIntExtra("busStopNo", 0);
         computeTime(totalTime);
     }
-
 
     int counter = 0;
     private void computeTime(int countTime){
@@ -62,12 +74,15 @@ public class alarmTimer extends AppCompatActivity {
             }
 
             public void onFinish() {
-                mTextField.setText("done!");
-            }
+                mTextField.setText("DONE!");
+                mp.start();
+              }
         }.start();
+    }
+
+
 
     }
-}
 
 
 
