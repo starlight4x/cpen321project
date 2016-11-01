@@ -7,11 +7,11 @@ package com.example.johan.planmytrip;
 public class Bus
 {
     private String routeName;
-    private int busNo;
+    private String busNo;
     private String estimatedLeaveTime;
     private String destination;
 
-    public Bus(String routeName,int busNo,String estimatedLeaveTime, String destination){
+    public Bus(String routeName,String busNo,String estimatedLeaveTime, String destination){
         this.routeName = routeName;
         this.busNo = busNo;
         this.estimatedLeaveTime = estimatedLeaveTime;
@@ -23,7 +23,7 @@ public class Bus
         return routeName;
     }
 
-    public int getBusNo() {
+    public String getBusNo() {
         return busNo;
     }
 

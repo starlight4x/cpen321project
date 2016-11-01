@@ -37,7 +37,7 @@ public class TranslinkHandler {
 
     public void getNextBuses(String stopNo){
 
-        String url = "http://api.translink.ca/rttiapi/v1/stops/"+ stopNo + "/estimates?apikey=1Y8IBRRxW0yYIhxyWsw";
+        String url = "http://api.translink.ca/rttiapi/v1/stops/"+ stopNo + "/estimates?apikey=1Y8IBRRxW0yYIhxyWswH";
         myJSONArrayRequest(url, 1);
 
     }
@@ -112,7 +112,7 @@ public class TranslinkHandler {
                             jsonobjectBusInfo = busArray.getJSONObject(j);
                             String destination = jsonobjectBusInfo.getString("Destination");
                             String expectedLeaveTime = jsonobjectBusInfo.getString("ExpectedLeaveTime");
-                            Bus bus = new Bus(routeName,Integer.parseInt(routeNo),expectedLeaveTime,destination);
+                            Bus bus = new Bus(routeName,routeNo,expectedLeaveTime,destination);
                             nextBuses.add(bus);
 
                         } catch (JSONException e) {
