@@ -93,7 +93,10 @@ public class MainActivity extends AppCompatActivity {
                 return  false;
         }
 
-        if(counter == a.length())   return true;
-        else        return false;
+        if(counter == a.length())
+            return true;
+
+        else
+            return false;
     }
 }
