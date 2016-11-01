@@ -72,7 +72,7 @@ public class TranslinkUI extends AppCompatActivity {
         String stopNo = myIntent.getStringExtra("busStopNo"); // will return "FirstKeyValue"
 
         text_view.setText("Loading..");
-        new TranslinkHandler(this).getEstimatedTimeFromGoogle("49.187706","-122.850060","49.111706","-122.850060", "now");
+        new TranslinkHandler(this).getEstimatedTimeFromGoogle("49.273323","-123.06943","49.277014","-123.069433", "now");
         new TranslinkHandler(this).getNextBuses(stopNo);
 
 

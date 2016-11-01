@@ -37,7 +37,7 @@ public class TranslinkHandler {
 
     public void getNextBuses(String stopNo){
 
-        String url = "http://api.translink.ca/rttiapi/v1/stops/"+ stopNo + "/estimates?apikey=1Y8IBRRxW0yYIhxyWswH";
+        String url = "http://api.translink.ca/rttiapi/v1/stops/"+ stopNo + "/estimates?apikey=1Y8IBRRxW0yYIhxyWsw";
         myJSONArrayRequest(url, 1);
 
     }
@@ -56,13 +56,11 @@ public class TranslinkHandler {
     }
 
     public void getEstimatedTimeFromGoogle(String startLatitude, String startLongitude, String destLatitude, String destLongitude,String departureTime) {
-
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="+ startLatitude + "," + startLongitude +"&destinations=" + destLatitude + "," + destLongitude +"&mode=transit&departure_time="+departureTime+"&key=AIzaSyAIKdSYquNCT6LaIAK1iVzv-CxO9HbPzNg";
         myJSONObjectRequest(url, 4);
 
 
     }
-
 
     private void getNearestStopsReturned(JSONArray response, String errorMsg){
         System.out.print(response.toString());
@@ -137,7 +135,7 @@ public class TranslinkHandler {
 
         }
         else{
-            ((TranslinkUI)context).nextBusesQueryReturned(null, errorMsg);
+            ((TranslinkUI)context).nextBusesQueryReturned(null, "A server error occured. Please check if the stop number is correct. (" + errorMsg+ ")");
 
         }
 
@@ -161,7 +159,7 @@ public class TranslinkHandler {
                 }
 
 
-            System.out.print("hallo hallo hallo hallo " +durationInSeconds + "!!!!!!");
+            System.out.println("hallo hallo hallo hallo " +durationInSeconds + "!!!!!!");
 
            // ((TranslinkUI)context).estimatedTimeReturned(durationInSeconds);
 
@@ -182,7 +180,6 @@ public class TranslinkHandler {
 
     }
 
-
     private void translinkRequestResponded(int inputID, JSONArray jsonArray, JSONObject jsonObject, String errorMsg){
 
         switch(inputID){
@@ -202,8 +199,6 @@ public class TranslinkHandler {
         }
 
     }
-
-
 
     private void myJSONObjectRequest(String url, final int inputID){
 
@@ -240,7 +235,6 @@ public class TranslinkHandler {
 
     }
 
-
     private void myJSONArrayRequest(String url, final int inputID){
 
         RequestQueue queue = Volley.newRequestQueue(context);
@@ -261,8 +255,7 @@ public class TranslinkHandler {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                translinkRequestResponded(inputID,null,null,error.toString());
-
+                translinkRequestResponded(inputID,null,null,String.valueOf(error.networkResponse.statusCode));
             }
 
         };
@@ -270,6 +263,49 @@ public class TranslinkHandler {
 
 
         JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, url, null,myResponseListener,myErrorListener)
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/JSON");
+                return params;
+            }
+
+        };
+
+        queue.add(jsonRequest);
+
+
+    }
+
+    private void myStringRequest(String url, final int inputID){
+
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+        Response.Listener<String> myResponseListener = new Response.Listener<String>()
+        {
+
+            @Override
+            public void onResponse(String response) {
+                //translinkRequestResponded(inputID,new JSONObject(response),null,null);
+                System.out.println(response);
+
+            }
+
+        };
+        Response.ErrorListener myErrorListener = new Response.ErrorListener()
+        {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                translinkRequestResponded(inputID,null,null,String.valueOf(error.networkResponse.statusCode));
+            }
+
+        };
+
+
+
+        StringRequest jsonRequest = new StringRequest(Request.Method.GET, url,myResponseListener,myErrorListener)
         {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {

@@ -81,15 +81,19 @@ public class MainActivity extends AppCompatActivity {
 
         for(int i = 0; i < a.length(); i++){
 
-            if(a.charAt(0) >= 0 || a.charAt(0) <= 9 ){
+            if(Character.getNumericValue(a.charAt(i)) >= 0 && Character.getNumericValue(a.charAt(i)) <= 9 ){
                 counter++;
-                continue;
+                //continue;
             }
             else
                 return  false;
         }
 
-        if(counter == a.length())   return true;
-        else        return false;
+        if(counter == a.length()){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }
