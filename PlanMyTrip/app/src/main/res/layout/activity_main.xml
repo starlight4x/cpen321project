@@ -34,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/done1"
-        android:onClick="busStopNumber"
+        android:onClick="nextButtonPressed"
         android:layout_alignTop="@+id/busStopNumber"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"

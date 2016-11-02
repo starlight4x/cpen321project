@@ -1,10 +1,12 @@
 package com.example.johan.planmytrip;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +19,9 @@ public class ConnectDatabase extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sqlite);
+
+        //Intent myIntent = getIntent();
+        //Bus bus = (Bus)myIntent.getSerializableExtra("selectedBus");
 
         this.listView = (ListView) findViewById(R.id.listView);
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);

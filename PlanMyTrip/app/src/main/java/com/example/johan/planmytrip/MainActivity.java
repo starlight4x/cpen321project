@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void busStopNumber(View view){
+    public void nextButtonPressed(View view){
 
         EditText editText = (EditText) findViewById(R.id.busStopNumber);
         String message1 = editText.getText().toString();
@@ -42,10 +42,20 @@ public class MainActivity extends AppCompatActivity {
 
         if(message1.length() == 5 && isInteger(message1)){
 
-            stopNumber = message1;
-            new TranslinkHandler(this).getNextBuses(message1);
-            loadingPanel.setVisibility(View.VISIBLE);
+            if (isNetworkAvailable()) {
+                stopNumber = message1;
+                new TranslinkHandler(this).getNextBuses(message1);
+                loadingPanel.setVisibility(View.VISIBLE);
+            }
+            else{
+                Context context = getApplicationContext();
+                CharSequence text = "NO NETWORK AVAILABLE";
+                int duration = Toast.LENGTH_SHORT;
 
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+
+            }
         }
 
         else{

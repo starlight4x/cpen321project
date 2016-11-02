@@ -79,15 +79,17 @@ public class TranslinkUI extends AppCompatActivity {
         new TranslinkHandler(this).getEstimatedTimeFromGoogle("49.187706","-122.850060","49.111706","-122.850060", "now");
 
 
-
         listView = (ListView) findViewById(R.id.list_view);
 
         listView.setAdapter(new NextBusesAdapter(this, nextBuses));
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                return true;
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                //Intent intent = new Intent(TranslinkUI.this, com.example.johan.planmytrip.ConnectDatabase.class);
+                //intent.putExtra("selectedBus",nextBuses.get(position));
+                //startActivity(intent);
+
             }
         });
 
