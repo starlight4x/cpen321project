@@ -22,14 +22,15 @@ public class ConnectDatabase extends AppCompatActivity{
 
         //Intent myIntent = getIntent();
         //Bus bus = (Bus)myIntent.getSerializableExtra("selectedBus");
-
+        Intent myIntent = getIntent(); // gets the previously created intent
+        String selRoute = myIntent.getStringExtra("selectedRoute"); // will return "FirstKeyValue"
         this.listView = (ListView) findViewById(R.id.listView);
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         databaseAccess.open();
-        List<String> quotes = databaseAccess.getAgency();
+        List<String> stops = databaseAccess.getStops(selRoute);
         databaseAccess.close();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, quotes);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stops);
         this.listView.setAdapter(adapter);
     }
 

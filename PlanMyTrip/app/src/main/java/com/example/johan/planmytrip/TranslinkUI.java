@@ -83,15 +83,19 @@ public class TranslinkUI extends AppCompatActivity {
 
         listView.setAdapter(new NextBusesAdapter(this, nextBuses));
 
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                //Intent intent = new Intent(TranslinkUI.this, com.example.johan.planmytrip.ConnectDatabase.class);
-                //intent.putExtra("selectedBus",nextBuses.get(position));
-                //startActivity(intent);
+                Intent intent = new Intent(TranslinkUI.this, ConnectDatabase.class);
+                intent.putExtra("selectedRoute",nextBuses.get(position).getBusNo());
+                startActivity(intent);
 
             }
         });
+
+
+
 
 
     }

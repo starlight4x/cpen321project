@@ -17,10 +17,11 @@ public class DatabaseAccess {
     private SQLiteOpenHelper openHelper;
     private SQLiteDatabase database;
     private static DatabaseAccess instance;
-    private String route_num = "099";
+    //private String route_num = "099";
     private String route_id;
     private String trip_id;
     private String stop_id;
+    private String prev_id = "";
 
     /**
      * Private constructor to aboid object creation from outside classes.
@@ -67,23 +68,10 @@ public class DatabaseAccess {
      *
      * @return a List of quotes
      */
-    public List<String> getAgency() {
-        List<String> list = new ArrayList<>();
+    public List<String> getStops(String route_num) {
+        List<String> list = new ArrayList<String>();
         Cursor cursor = database.rawQuery("SELECT * FROM routes WHERE route_short_name LIKE '%" + route_num + "%'", null);
-    /*
 
-        if(cursor != null) {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                list.add(cursor.getString(2) + " " + cursor.getString(3));
-                cursor.moveToNext();
-            }
-            cursor.close();
-        }
-        else
-            Log.d("SQLite error", "bad query");
-        return list;
-        */
         if (cursor != null) {
             try {
                 if (cursor.moveToFirst()) {
@@ -117,17 +105,15 @@ public class DatabaseAccess {
                 if (c2 != null) {
                     try {
                         if (c2.moveToFirst()) {
-                            list.add(c2.getString(1) + " " + c2.getString(2));
+                            if(c2.getString(1) != prev_id) {
+                                list.add(c2.getString(2));
+                                prev_id = c2.getString(1);
+                            }
                         }
                     } finally {
                         c2.close();
                     }
                 }
-
-
-
-
-
                 cursor.moveToNext();
             }
             cursor.close();
