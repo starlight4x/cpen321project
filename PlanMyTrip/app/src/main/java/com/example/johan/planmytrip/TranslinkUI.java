@@ -45,6 +45,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,19 +66,30 @@ public class TranslinkUI extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.translinkui_activity_main);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-      //  setSupportActionBar(toolbar);
+        //setSupportActionBar(toolbar);
 
         text_view = (TextView) this.findViewById(R.id.text_field);
+        text_view.setText("");
 
         Intent myIntent = getIntent(); // gets the previously created intent
         String stopNo = myIntent.getStringExtra("busStopNo"); // will return "FirstKeyValue"
+        nextBuses = (ArrayList<Bus>)myIntent.getSerializableExtra("busList");
+        Collections.sort(nextBuses);
 
-        text_view.setText("Loading..");
         new TranslinkHandler(this).getEstimatedTimeFromGoogle("49.187706","-122.850060","49.111706","-122.850060", "now");
-        new TranslinkHandler(this).getNextBuses(stopNo);
+
 
 
         listView = (ListView) findViewById(R.id.list_view);
+
+        listView.setAdapter(new NextBusesAdapter(this, nextBuses));
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                return true;
+            }
+        });
 
 
     }
@@ -146,6 +159,5 @@ public class TranslinkUI extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 
 }

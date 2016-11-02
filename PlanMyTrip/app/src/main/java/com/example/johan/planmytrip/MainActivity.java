@@ -4,23 +4,34 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.opengl.Visibility;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.johan.planmytrip.R;
 import com.example.johan.planmytrip.TranslinkHandler;
 
+import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity {
 
+    private String stopNumber;
+    private RelativeLayout loadingPanel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        loadingPanel = (RelativeLayout) findViewById(R.id.loadingPanel);
+        loadingPanel.setVisibility(View.GONE);
+
     }
 
     public void busStopNumber(View view){
@@ -31,24 +42,10 @@ public class MainActivity extends AppCompatActivity {
 
         if(message1.length() == 5 && isInteger(message1)){
 
-            //
-            Intent intent = new Intent(this, TranslinkUI.class);
-            intent.putExtra("busStopNo",message1);
-            //Intent intent1 = new Intent(this, TranslinkHandler.class);
-            //String message = initial + message1 + ending;
-            //intent1.putExtra(MESSAGE, message);
-            if (isNetworkAvailable()) {
-                startActivity(intent);
-            }
-            else {
-                Context context = getApplicationContext();
-                CharSequence text = "No internet connection";
-                int duration = Toast.LENGTH_SHORT;
+            stopNumber = message1;
+            new TranslinkHandler(this).getNextBuses(message1);
+            loadingPanel.setVisibility(View.VISIBLE);
 
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-
-            }
         }
 
         else{
@@ -74,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-
     private boolean isInteger(String a){
 
         int counter = 0;
@@ -95,4 +91,23 @@ public class MainActivity extends AppCompatActivity {
         else
             return false;
     }
+
+    public void nextBusesQueryReturned(ArrayList<Bus> result, String errorMsg){
+
+        loadingPanel.setVisibility(View.GONE);
+
+        if(errorMsg != null){
+            Context context = getApplicationContext();
+            int duration = Toast.LENGTH_LONG;
+            Toast toast = Toast.makeText(context, errorMsg, duration);
+            toast.show();
+        }
+        else {
+            Intent intent = new Intent(this, TranslinkUI.class);
+            intent.putExtra("busStopNo", stopNumber);
+            intent.putExtra("busList", result);
+            startActivity(intent);
+        }
+    }
+
 }
