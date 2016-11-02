@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="com.example.johan.planmytrip.MainActivity"
-    android:backgroundTint="@android:color/holo_blue_bright"
-    android:background="@android:color/holo_blue_bright">
+    android:background="#edeeef">
 
     <include layout="@layout/translinkui_content_main" />
 
