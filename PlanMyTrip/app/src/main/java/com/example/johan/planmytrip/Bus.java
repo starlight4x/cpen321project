@@ -49,9 +49,9 @@ public class Bus implements Serializable, Comparable<Bus>
     @Override
     public int compareTo(Bus bus) {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mma yyyy-MM-dd");
 
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mma yyyy-MM-dd");
             Date date1 = sdf.parse(bus.getEstimatedLeaveTime());
             Date date2 = sdf.parse(getEstimatedLeaveTime());
             if (date1.compareTo(date2) <= 0) {
@@ -62,8 +62,23 @@ public class Bus implements Serializable, Comparable<Bus>
             }
         }
         catch(ParseException e){
-            System.out.println("Parse exception date!!!!");
-            return 1;
+
+            try{
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mma");
+                Date date1 = sdf.parse(bus.getEstimatedLeaveTime());
+                Date date2 = sdf.parse(getEstimatedLeaveTime());
+                if (date1.compareTo(date2) <= 0) {
+                    return 1;
+                }
+                else{
+                    return -1;
+                }
+
+            }
+            catch(ParseException e1){
+                System.out.println("Parse exception date!!!!");
+                return 1;
+            }
         }
 
     }
