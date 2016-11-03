@@ -6,10 +6,10 @@
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
         android:theme="?attr/actionBarTheme"
         android:minHeight="?attr/actionBarSize"
-        android:id="@+id/toolbar2" />
+        android:id="@+id/toolbar2"
+        android:background="#0649B6" />
 
     <TextView
         android:text="Time Your Trip"
@@ -19,7 +19,8 @@
         android:layout_above="@+id/listView"
         android:textSize="30sp"
         android:textColor="#FFDA24"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:translationY="10dp" />
 
     <ListView
         android:id="@+id/listView"

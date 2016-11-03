@@ -76,18 +76,18 @@ public class alarmTimer extends AppCompatActivity {
                  *
                  */
                 if(hours > 0)
-                mTextField.setText( hours + " hours\n"  + minutes + " minutes\n" + seconds + " seconds remaining!!!" );
+                mTextField.setText( hours + " hours\n"  + minutes + " minutes\n" + seconds + " seconds!!!" );
 
                 else if(minutes > 0)
-                    mTextField.setText( minutes + " minutes\n" + seconds + " seconds remaining!!!" );
+                    mTextField.setText( minutes + " minutes\n" + seconds + " seconds!!!" );
 
                 else
-                    mTextField.setText(seconds + " seconds remaining!!!" );
+                    mTextField.setText(seconds + " seconds!!!" );
 
             }
 
             public void onFinish() {
-                mTextField.setText("DONE!");
+                mTextField.setText("NOW!");
                 mp.start();
               }
         }.start();

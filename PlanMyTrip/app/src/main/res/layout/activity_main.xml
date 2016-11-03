@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.johan.planmytrip.MainActivity"
-    android:background="#edeeef">
+    android:background="#edeeef"
+    android:layout_marginTop="0dp">
 
 
     <android.support.v7.widget.Toolbar
@@ -27,7 +28,8 @@
         android:textAllCaps="false"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_alignBottom="@+id/toolbar" />
+        android:layout_alignBottom="@+id/toolbar"
+        tools:ignore="RelativeOverlap" />
 
     <Button
         android:text="@string/next"
@@ -40,11 +42,13 @@
         android:layout_alignParentEnd="true"
         android:layout_alignBottom="@+id/busStopNumber"
         android:layout_marginEnd="60dp"
-        android:textColor="#0649B6" />
+        android:layout_marginRight="60dp"
+        android:textColor="#0649B6"
+        android:layout_marginStart="10dp" />
 
     <EditText
         android:layout_height="wrap_content"
-        android:inputType=""
+        android:inputType="number"
         android:ems="10"
         android:id="@+id/busStopNumber"
         android:hint="@string/enterstartingstop"
@@ -64,7 +68,14 @@
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:indeterminate="true" />
+            android:indeterminate="true"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="-15dp"
+            android:layout_marginLeft="140dp" />
     </RelativeLayout>
 
 
