@@ -10,6 +10,8 @@ import android.media.SoundPool;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +20,8 @@ import android.widget.Toast;
  */
 
 public class alarmTimer extends AppCompatActivity {
+
+
 
     MediaPlayer mp = new MediaPlayer();
 
@@ -30,6 +34,14 @@ public class alarmTimer extends AppCompatActivity {
        // MediaPlayer mp = new MediaPlayer();
         mp = MediaPlayer.create(this, R.raw.sound);
 
+
+        Button stopAlarm = (Button) this.findViewById(R.id.button3);
+        stopAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mp.stop();
+            }
+        });
 
         Intent timeIntent  = getIntent();
         Stop start = (Stop)timeIntent.getSerializableExtra("startingStop");
@@ -85,6 +97,7 @@ public class alarmTimer extends AppCompatActivity {
                     mTextField.setText(seconds + " seconds!!!" );
 
             }
+
 
             public void onFinish() {
                 mTextField.setText("NOW!");

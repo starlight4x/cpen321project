@@ -25,7 +25,7 @@
         android:id="@+id/toolbar3" />
 
     <TextView
-        android:text="Time Your Trip"
+        android:text="@string/time1_your_trip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/title"
@@ -62,5 +62,15 @@
         android:textColor="#0649B6"
         android:layout_below="@+id/toolbar3"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text="@string/stopalarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button3"
+        android:textColor="@android:color/holo_red_light"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="109dp" />
 
 </RelativeLayout>
