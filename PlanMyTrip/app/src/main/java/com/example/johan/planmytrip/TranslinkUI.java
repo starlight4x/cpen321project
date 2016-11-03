@@ -93,11 +93,7 @@ public class TranslinkUI extends AppCompatActivity {
 
             }
         });
-
-
-
-
-
+        
     }
 
     public void routeStopsQueryReturned(String result, String errorMsg){

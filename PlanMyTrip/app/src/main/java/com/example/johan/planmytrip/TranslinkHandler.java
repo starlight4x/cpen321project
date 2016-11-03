@@ -55,6 +55,12 @@ public class TranslinkHandler {
 
     }
 
+    public void getCoordinatesForStop(String stopNo) {
+        String url = "http://api.translink.ca/rttiapi/v1/stops/" + stopNo +" ?apikey=1Y8IBRRxW0yYIhxyWswH";
+        myJSONObjectRequest(url, 5);
+
+    }
+
     public void getEstimatedTimeFromGoogle(String startLatitude, String startLongitude, String destLatitude, String destLongitude,String departureTime) {
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="+ startLatitude + "," + startLongitude +"&destinations=" + destLatitude + "," + destLongitude +"&mode=transit&departure_time="+departureTime+"&key=AIzaSyAIKdSYquNCT6LaIAK1iVzv-CxO9HbPzNg";
         myJSONObjectRequest(url, 4);
@@ -180,6 +186,23 @@ public class TranslinkHandler {
 
     }
 
+    private void getCoordinatesForStopReturned(JSONObject response, String errorMsg){
+        if(errorMsg == null) {
+            try {
+                String latitude = response.getString("Latitude");
+                String longitude = response.getString("Longitude");
+
+                //call someone who needs this information
+            }
+            catch(JSONException e){
+
+            }
+        }
+        else{
+
+        }
+    }
+
     private void translinkRequestResponded(int inputID, JSONArray jsonArray, JSONObject jsonObject, String errorMsg){
 
         switch(inputID){
@@ -194,6 +217,9 @@ public class TranslinkHandler {
                 break;
             case 4:
                 getEstimatedTimeFromGoogleReturned(jsonObject,errorMsg);
+                break;
+            case 5:
+                getCoordinatesForStopReturned(jsonObject,errorMsg);
                 break;
             default: break;
         }
