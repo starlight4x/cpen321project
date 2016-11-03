@@ -35,7 +35,7 @@ public class alarmTimer extends AppCompatActivity {
         Stop start = (Stop)timeIntent.getSerializableExtra("startingStop");
         Stop destination = (Stop)timeIntent.getSerializableExtra("destination");
         System.out.println(start.getLatitude() + start.getLongitude());
-        //new TranslinkHandler(this).getEstimatedTimeFromGoogle(start.getLatitude(), start.getLongitude(),destination.getLatitude(),destination.getLongitude(), "now");
+        new TranslinkHandler(this).getEstimatedTimeFromGoogle(start.getLatitude(), start.getLongitude(),destination.getLatitude(),destination.getLongitude(), "now");
         //totalTime = timeIntent.getIntExtra("setTime", 0);
         //computeTime(totalTime);
     }
@@ -44,6 +44,7 @@ public class alarmTimer extends AppCompatActivity {
         int dur = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(context, duration, dur);
         toast.show();
+        computeTime(Integer.parseInt(duration) * 1000);
     }
 
     int counter = 0;

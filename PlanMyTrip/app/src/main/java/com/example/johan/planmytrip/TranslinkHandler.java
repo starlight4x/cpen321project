@@ -349,10 +349,7 @@ public class TranslinkHandler {
             }
 
         };
-
         queue.add(jsonRequest);
-
-
     }
 
 
