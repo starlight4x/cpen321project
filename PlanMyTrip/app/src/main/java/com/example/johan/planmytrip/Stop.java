@@ -1,24 +1,44 @@
 package com.example.johan.planmytrip;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by johan on 23.10.2016.
  */
 
-public class Stop {
-    private int stopNo;
+public class Stop implements Serializable{
+    private String stopCode;
+    private String stopID;
     private String name;
-    private double longitude;
-    private double latitude;
-    private ArrayList<Bus> nextBuses;
+    private String longitude;
+    private String latitude;
 
-    public Stop(int stopNo, String name, double longitude, double latitude, ArrayList<Bus> nextBuses){
-        this.stopNo = stopNo;
+    public Stop(String stopID, String stopCode, String name, String latitude, String longitude){
+        this.stopCode = stopCode;
+        this.stopID = stopID;
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
-        this.nextBuses = nextBuses;
     }
 
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public String getStopCode() {
+        return stopCode;
+    }
+
+    public String getStopID() {
+        return stopID;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

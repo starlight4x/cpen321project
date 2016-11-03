@@ -49,6 +49,7 @@ public class TranslinkHandler {
 
     }
 
+
     public void getStopsForRoute() {
         String url = "http://api.translink.ca/rttiapi/v1/routes/351?apikey=1Y8IBRRxW0yYIhxyWswH";
         myJSONObjectRequest(url, 3);
@@ -66,6 +67,11 @@ public class TranslinkHandler {
         myJSONObjectRequest(url, 4);
 
 
+    }
+
+    public void getStopInfo(String stopNo) {
+        String url = "http://api.translink.ca/rttiapi/v1/stops/" + stopNo + "?apikey=1Y8IBRRxW0yYIhxyWswH";
+        myJSONObjectRequest(url, 5);
     }
 
     private void getNearestStopsReturned(JSONArray response, String errorMsg){
@@ -147,6 +153,8 @@ public class TranslinkHandler {
 
     }
 
+
+
     private void getEstimatedTimeFromGoogleReturned(JSONObject response, String errorMsg){
 
         if (errorMsg == null) {
@@ -167,7 +175,7 @@ public class TranslinkHandler {
 
             System.out.println("hallo hallo hallo hallo " +durationInSeconds + "!!!!!!");
 
-            // ((TranslinkUI)context).estimatedTimeReturned(durationInSeconds);
+            ((alarmTimer)context).estimatedTimeReturned(durationInSeconds);
 
 
 

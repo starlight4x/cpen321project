@@ -57,7 +57,7 @@ public class TranslinkUI extends AppCompatActivity {
     private TextView text_view;
     private ArrayList<Bus> nextBuses;
     private ListView listView;
-
+    private String stopNo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,11 +72,11 @@ public class TranslinkUI extends AppCompatActivity {
         text_view.setText("");
 
         Intent myIntent = getIntent(); // gets the previously created intent
-        String stopNo = myIntent.getStringExtra("busStopNo"); // will return "FirstKeyValue"
+        stopNo = myIntent.getStringExtra("busStopNo"); // will return "FirstKeyValue"
         nextBuses = (ArrayList<Bus>)myIntent.getSerializableExtra("busList");
         Collections.sort(nextBuses);
 
-        new TranslinkHandler(this).getEstimatedTimeFromGoogle("49.187706","-122.850060","49.111706","-122.850060", "now");
+        //new TranslinkHandler(this).getEstimatedTimeFromGoogle("49.187706","-122.850060","49.111706","-122.850060", "now");
 
 
         listView = (ListView) findViewById(R.id.list_view);
@@ -89,6 +89,7 @@ public class TranslinkUI extends AppCompatActivity {
                                     int position, long id) {
                 Intent intent = new Intent(TranslinkUI.this, ConnectDatabase.class);
                 intent.putExtra("selectedRoute",nextBuses.get(position).getBusNo());
+                intent.putExtra("stopNo", stopNo);
                 startActivity(intent);
 
             }

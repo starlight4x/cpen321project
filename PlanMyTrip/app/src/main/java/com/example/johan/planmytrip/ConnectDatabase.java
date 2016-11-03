@@ -1,10 +1,14 @@
 package com.example.johan.planmytrip;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +19,8 @@ import java.util.List;
 
 public class ConnectDatabase extends AppCompatActivity{
     private ListView listView;
+    private ArrayList<Stop> stops;
+    private Stop origStop;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,15 +30,46 @@ public class ConnectDatabase extends AppCompatActivity{
         //Bus bus = (Bus)myIntent.getSerializableExtra("selectedBus");
         Intent myIntent = getIntent(); // gets the previously created intent
         String selRoute = myIntent.getStringExtra("selectedRoute"); // will return "FirstKeyValue"
+        String input = myIntent.getStringExtra("stopNo");
         this.listView = (ListView) findViewById(R.id.listView);
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         databaseAccess.open();
-        List<String> stops = databaseAccess.getStops(selRoute);
+        stops = databaseAccess.getStops(selRoute);
+        origStop = databaseAccess.getOriginalStop(input);
         databaseAccess.close();
+        listView.setAdapter(new NextStopsAdapter(this, stops));
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stops);
-        this.listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                //Intent intent = new Intent(ConnectDatabase.this, ConnectDatabase.class);
+               // intent.putExtra("selectedRoute",nextBuses.get(position).getBusNo());
+                //startActivity(intent);
+
+                if(origStop.getStopCode().equals(stops.get(position).getStopCode())) {
+                    Context context = getApplicationContext();
+                    int duration = Toast.LENGTH_LONG;
+                    Toast toast = Toast.makeText(context, "This is your current location!", duration);
+                    toast.show();
+                }
+
+                else {
+
+                    Intent intent = new Intent(ConnectDatabase.this, alarmTimer.class);
+                    intent.putExtra("startingStop", origStop);
+                    intent.putExtra("destination", stops.get(position));
+                    startActivity(intent);
+                }
+
+
+            }
+        });
     }
+
+
+
+
+
 
 
 }

@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
 
     private String stopNumber;
     private RelativeLayout loadingPanel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
-
             }
         }
 
@@ -66,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();
         }
-
     }
 
     public boolean isNetworkAvailable() {
@@ -103,9 +100,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void nextBusesQueryReturned(ArrayList<Bus> result, String errorMsg){
-
         loadingPanel.setVisibility(View.GONE);
-
         if(errorMsg != null){
             Context context = getApplicationContext();
             int duration = Toast.LENGTH_LONG;
@@ -119,5 +114,4 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
-
 }

@@ -63,13 +63,31 @@ public class DatabaseAccess {
         }
     }
 
+
+    public Stop getOriginalStop(String stop_code) {
+        Cursor cursor = database.rawQuery("SELECT * FROM stops WHERE stop_code=" + stop_code, null);
+        Stop prevStop = null;
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    prevStop = new Stop(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(4), cursor.getString(5));
+                    return prevStop;
+                }
+            } finally {
+                Log.d("route id", "error");
+                cursor.close();
+            }
+        }
+        return prevStop;
+
+    }
     /**
      * Read all quotes from the database.
      *
      * @return a List of quotes
      */
-    public List<String> getStops(String route_num) {
-        List<String> list = new ArrayList<String>();
+    public ArrayList<Stop> getStops(String route_num) {
+        ArrayList<Stop> list = new ArrayList<Stop>();
         Cursor cursor = database.rawQuery("SELECT * FROM routes WHERE route_short_name LIKE '%" + route_num + "%'", null);
 
         if (cursor != null) {
@@ -105,10 +123,8 @@ public class DatabaseAccess {
                 if (c2 != null) {
                     try {
                         if (c2.moveToFirst()) {
-                            if(c2.getString(1) != prev_id) {
-                                list.add(c2.getString(2));
-                                prev_id = c2.getString(1);
-                            }
+                            Stop newStop = new Stop(c2.getString(0), c2.getString(1), c2.getString(2), c2.getString(4), c2.getString(5));
+                            list.add(newStop);
                         }
                     } finally {
                         c2.close();
