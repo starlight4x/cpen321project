@@ -31,10 +31,11 @@ public class ConnectDatabase extends AppCompatActivity{
         Intent myIntent = getIntent(); // gets the previously created intent
         String selRoute = myIntent.getStringExtra("selectedRoute"); // will return "FirstKeyValue"
         String input = myIntent.getStringExtra("stopNo");
+        String destination = myIntent.getStringExtra("dest");
         this.listView = (ListView) findViewById(R.id.listView);
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         databaseAccess.open();
-        stops = databaseAccess.getStops(selRoute);
+        stops = databaseAccess.getStops(selRoute, destination);
         origStop = databaseAccess.getOriginalStop(input);
         databaseAccess.close();
         listView.setAdapter(new NextStopsAdapter(this, stops));

@@ -86,7 +86,7 @@ public class DatabaseAccess {
      *
      * @return a List of quotes
      */
-    public ArrayList<Stop> getStops(String route_num) {
+    public ArrayList<Stop> getStops(String route_num, String destination) {
         ArrayList<Stop> list = new ArrayList<Stop>();
         Cursor cursor = database.rawQuery("SELECT * FROM routes WHERE route_short_name LIKE '%" + route_num + "%'", null);
 
@@ -102,7 +102,7 @@ public class DatabaseAccess {
             }
         }
 
-        cursor = database.rawQuery("SELECT * FROM trips WHERE route_id=" + route_id, null);
+        cursor = database.rawQuery("SELECT * FROM trips WHERE route_id=" + route_id + " AND trip_headsign LIKE '%" + destination + "%'", null);
         if (cursor != null) {
             try {
                 if (cursor.moveToPosition(2)) {

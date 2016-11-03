@@ -90,6 +90,7 @@ public class TranslinkUI extends AppCompatActivity {
                 Intent intent = new Intent(TranslinkUI.this, ConnectDatabase.class);
                 intent.putExtra("selectedRoute",nextBuses.get(position).getBusNo());
                 intent.putExtra("stopNo", stopNo);
+                intent.putExtra("dest", nextBuses.get(position).getDestination());
                 startActivity(intent);
 
             }
