@@ -8,7 +8,8 @@
     tools:context="com.example.johan.planmytrip.MainActivity"
     android:background="#edeeef">
 
-    <include layout="@layout/translinkui_content_main" />
+    <include layout="@layout/translinkui_content_main"
+        android:layout_height="511dp" />
 
 
 </android.support.design.widget.CoordinatorLayout>
