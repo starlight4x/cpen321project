@@ -71,28 +71,6 @@ public class alarmTimer extends AppCompatActivity {
 
                 int totalSeconds =  (int)millisUntilFinished/1000;
 
-/*
-                int hours = totalSeconds/(60 * 60);
-
-                int minutes;
-                if(hours > 0) {
-                    minutes = totalSeconds / (hours * 60);
-                    if(minutes > 60){
-                        minutes = minutes - 60;
-                        hours++;
-                    }
-                }
-                else {
-                    minutes = totalSeconds / 60;
-
-                }
-                int seconds = (totalSeconds % 60) ;
-                /*
-                 * 90 seconds => 0 hr
-                 * =>
-                 *
-                 */
-
                 int hours =  (totalSeconds % 86400) / 3600;
                 int minutes = (totalSeconds % 3600) / 60;
                 int seconds = (totalSeconds % 60);
