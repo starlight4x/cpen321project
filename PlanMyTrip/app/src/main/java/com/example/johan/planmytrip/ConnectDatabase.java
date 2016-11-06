@@ -21,6 +21,7 @@ public class ConnectDatabase extends AppCompatActivity{
     private ListView listView;
     private ArrayList<Stop> stops;
     private Stop origStop;
+    private String selRoute;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +30,7 @@ public class ConnectDatabase extends AppCompatActivity{
         //Intent myIntent = getIntent();
         //Bus bus = (Bus)myIntent.getSerializableExtra("selectedBus");
         Intent myIntent = getIntent(); // gets the previously created intent
-        String selRoute = myIntent.getStringExtra("selectedRoute"); // will return "FirstKeyValue"
+        selRoute = myIntent.getStringExtra("selectedRoute"); // will return "FirstKeyValue"
         String input = myIntent.getStringExtra("stopNo");
         String destination = myIntent.getStringExtra("dest");
         this.listView = (ListView) findViewById(R.id.listView);
@@ -59,6 +60,7 @@ public class ConnectDatabase extends AppCompatActivity{
                     Intent intent = new Intent(ConnectDatabase.this, alarmTimer.class);
                     intent.putExtra("startingStop", origStop);
                     intent.putExtra("destination", stops.get(position));
+                    intent.putExtra("selRoute",selRoute);
                     startActivity(intent);
                 }
 

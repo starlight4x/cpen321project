@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +50,6 @@ public class TranslinkHandler {
 
     }
 
-
     public void getStopsForRoute() {
         String url = "http://api.translink.ca/rttiapi/v1/routes/351?apikey=1Y8IBRRxW0yYIhxyWswH";
         myJSONObjectRequest(url, 3);
@@ -72,6 +72,13 @@ public class TranslinkHandler {
     public void getStopInfo(String stopNo) {
         String url = "http://api.translink.ca/rttiapi/v1/stops/" + stopNo + "?apikey=1Y8IBRRxW0yYIhxyWswH";
         myJSONObjectRequest(url, 5);
+    }
+
+    public void getNearestBusStopServingRoute(double latitude, double longitude, String routeNo){
+        String latitudeString = new DecimalFormat("##.######").format(latitude);
+        String longitudeString = new DecimalFormat("##.######").format(longitude);
+        String url = "http://api.translink.ca/rttiapi/v1/stops?apikey=1Y8IBRRxW0yYIhxyWswH&lat="+ latitudeString + "&long="+longitudeString+"&routeNo="+routeNo+"&radius=1999";
+        myJSONArrayRequest(url, 6);
     }
 
     private void getNearestStopsReturned(JSONArray response, String errorMsg){
@@ -147,13 +154,12 @@ public class TranslinkHandler {
 
         }
         else{
+            //got error 302, 404,
+            //302 connected to network but no internet
             ((MainActivity)context).nextBusesQueryReturned(null, "A server error occured. Please check if the stop number is correct. (" + errorMsg+ ")");
-
         }
 
     }
-
-
 
     private void getEstimatedTimeFromGoogleReturned(JSONObject response, String errorMsg){
 
@@ -175,13 +181,13 @@ public class TranslinkHandler {
 
             System.out.println("hallo hallo hallo hallo " +durationInSeconds + "!!!!!!");
 
-            ((alarmTimer)context).estimatedTimeReturned(durationInSeconds);
+            ((alarmTimer)context).estimatedTimeReturned(durationInSeconds, null);
 
 
 
         }
         else{
-            //((TranslinkUI)context).nextBusesQueryReturned(nextBuses, null);
+            ((alarmTimer)context).estimatedTimeReturned(null, errorMsg);
 
         }
 
@@ -203,11 +209,33 @@ public class TranslinkHandler {
                 //call someone who needs this information
             }
             catch(JSONException e){
-
+                System.out.print("Error parsing JSONArray" + e.toString());
             }
         }
         else{
+            System.out.println("error");
+        }
+    }
 
+    private void getNearestBusStopServingRouteReturned(JSONArray response, String errorMsg){
+        if (errorMsg == null) {
+            String latitude = "";
+            String longitude = "";
+            try {
+                System.out.println(response.toString());
+                JSONObject firstStop = response.getJSONObject(0);
+                latitude = firstStop.getString("Latitude");
+                longitude = firstStop.getString("Longitude");
+            }
+            catch(JSONException e){
+                System.out.print("Error parsing JSONArray" + e.toString());
+            }
+
+            ((alarmTimer)context).getNearestBusStopServingRouteReturned(latitude, longitude, null);
+        }
+        else{
+            System.out.println("error");
+            ((alarmTimer)context).getNearestBusStopServingRouteReturned(null, null, errorMsg);
         }
     }
 
@@ -228,6 +256,9 @@ public class TranslinkHandler {
                 break;
             case 5:
                 getCoordinatesForStopReturned(jsonObject,errorMsg);
+                break;
+            case 6:
+                getNearestBusStopServingRouteReturned(jsonArray,errorMsg);
                 break;
             default: break;
         }
@@ -351,6 +382,5 @@ public class TranslinkHandler {
         };
         queue.add(jsonRequest);
     }
-
 
 }
