@@ -22,7 +22,7 @@ import android.widget.Toast;
 public class alarmTimer extends AppCompatActivity {
 
 
-    CountDownTimer setTimer;
+    CountDownTimer setTimer = null;
     MediaPlayer mp = new MediaPlayer();
 
     //private int totalTime = 10000;
@@ -33,7 +33,6 @@ public class alarmTimer extends AppCompatActivity {
 
        // MediaPlayer mp = new MediaPlayer();
         mp = MediaPlayer.create(this, R.raw.sound);
-
 
         Button stopAlarm = (Button) this.findViewById(R.id.button3);
         stopAlarm.setOnClickListener(new View.OnClickListener() {
@@ -59,15 +58,12 @@ public class alarmTimer extends AppCompatActivity {
         computeTime(Integer.parseInt(duration) * 1000);
     }
 
+
     int counter = 0;
     private void computeTime(int countTime){
 
         final TextView mTextField = (TextView) findViewById(R.id.textView3);
 
-        if(setTimer != null){
-            setTimer.cancel();
-            setTimer = null;
-        }
 
         setTimer = new CountDownTimer(countTime, 1000) {
 
@@ -75,7 +71,7 @@ public class alarmTimer extends AppCompatActivity {
 
                 int totalSeconds =  (int)millisUntilFinished/1000;
 
-
+/*
                 int hours = totalSeconds/(60 * 60);
 
                 int minutes;
@@ -96,6 +92,11 @@ public class alarmTimer extends AppCompatActivity {
                  * =>
                  *
                  */
+
+                int hours =  (totalSeconds % 86400) / 3600;
+                int minutes = (totalSeconds % 3600) / 60;
+                int seconds = (totalSeconds % 60);
+
                 if(hours > 0)
                 mTextField.setText( hours + " hours\n"  + minutes + " minutes\n" + seconds + " seconds!!!" );
 
@@ -115,7 +116,11 @@ public class alarmTimer extends AppCompatActivity {
         }.start();
     }
 
-
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        setTimer.cancel();
+    }
 
     }
 
