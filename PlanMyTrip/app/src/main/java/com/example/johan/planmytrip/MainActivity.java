@@ -30,8 +30,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private String stopNumber;
     private RelativeLayout loadingPanel;
-    Context ctx;
-    TextView tvOutput;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +41,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         loadingPanel = (RelativeLayout) findViewById(R.id.loadingPanel);
         loadingPanel.setVisibility(View.GONE);
-
-        ctx=this;
-        tvOutput =(TextView) findViewById(R.id.busStopNumber);
 
     }
 
@@ -57,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         return super.onCreateOptionsMenu(menu);
 
     }
-
 
     /**
      * *SearchView
@@ -101,42 +96,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
    @Override
    public boolean onQueryTextChange(String newText){
-       tvOutput.setText(newText);
+       //tvOutput.setText(newText);
        return false;
    }
-
-    public void nextButtonPressed(View view){
-
-        EditText editText = (EditText) findViewById(R.id.busStopNumber);
-        String message1 = editText.getText().toString();
-        int sender = 12000;
-
-        if(message1.length() == 5 && isInteger(message1)){
-
-            if (isNetworkAvailable()) {
-                stopNumber = message1;
-                new TranslinkHandler(this).getNextBuses(message1);
-                loadingPanel.setVisibility(View.VISIBLE);
-            }
-            else{
-                Context context = getApplicationContext();
-                CharSequence text = "NO NETWORK AVAILABLE";
-                int duration = Toast.LENGTH_SHORT;
-
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-            }
-        }
-
-        else{
-            Context context = getApplicationContext();
-            CharSequence text = "INVALID BUS STOP NUMBER";
-            int duration = Toast.LENGTH_SHORT;
-
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-        }
-    }
 
     public boolean isNetworkAvailable() {
         ConnectivityManager cm = (ConnectivityManager)
