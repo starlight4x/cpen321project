@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.johan.planmytrip.MainActivity"
-    android:background="#edeeef">
+    android:background="#edeeef"
+    android:layout_marginTop="0dp">
 
 
     <android.support.v7.widget.Toolbar
@@ -16,45 +17,6 @@
         android:minHeight="?attr/actionBarSize"
         android:id="@+id/toolbar" />
 
-    <TextView
-        android:text="@string/time_your_trip2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView2"
-        android:textColor="#FFDA24"
-        android:translationY="10dp"
-        android:textSize="30sp"
-        android:textAllCaps="false"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_alignBottom="@+id/toolbar" />
-
-    <Button
-        android:text="@string/next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/done1"
-        android:onClick="nextButtonPressed"
-        android:layout_alignTop="@+id/busStopNumber"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignBottom="@+id/busStopNumber"
-        android:layout_marginEnd="60dp"
-        android:textColor="#0649B6" />
-
-    <EditText
-        android:layout_height="wrap_content"
-        android:inputType=""
-        android:ems="10"
-        android:id="@+id/busStopNumber"
-        android:hint="@string/enterstartingstop"
-        android:layout_width="150dp"
-        android:textColorLink="#FFDA24"
-        android:backgroundTint="#0649B6"
-        android:textCursorDrawable="@null"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/done1" />
-
     <RelativeLayout
         android:id="@+id/loadingPanel"
         android:layout_width="match_parent"
@@ -64,7 +26,14 @@
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:indeterminate="true" />
+            android:indeterminate="true"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="-15dp"
+            android:layout_marginLeft="140dp" />
     </RelativeLayout>
 
 

@@ -1,27 +1,18 @@
 package com.example.johan.planmytrip;
 
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.provider.Settings;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Created by Navjashan on 29.10.2016.
@@ -43,11 +34,13 @@ public class alarmTimer extends AppCompatActivity {
     private boolean hasSetGPSTo5000 = false;
     private boolean hasSetGPSTo3000 = false;
     private TextView timerTextView;
+    boolean alarmEnabled = false;
 
 
     //private int totalTime = 10000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_timer);
         timerTextView = (TextView) findViewById(R.id.textView3);
@@ -58,6 +51,22 @@ public class alarmTimer extends AppCompatActivity {
 
 
         mp = MediaPlayer.create(this, R.raw.sound);
+        final Button stopAlarm = (Button) this.findViewById(R.id.button3);
+        stopAlarm.setText("Set Alarm");
+        stopAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (alarmEnabled){
+                    stopAlarm.setText("Set Alarm");
+                    alarmEnabled = false;
+                    mp.stop();
+                }
+                else {
+                    stopAlarm.setText("Stop Alarm");
+                    alarmEnabled = true;
+                }
+            }
+        });
 
 
         Intent timeIntent  = getIntent();
@@ -94,8 +103,13 @@ public class alarmTimer extends AppCompatActivity {
                 myHandler.removeCallbacks(runnable);
             }
             if (!hasPlayedAlarm) {
-                mp.start();
-                hasPlayedAlarm = true;
+                if (alarmEnabled) {
+                    mp.start();
+                    Vibrator vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                    vib.vibrate(1500);
+
+                    hasPlayedAlarm = true;
+                }
             }
             if(!hasSetGPSTo3000) {
                 gpsHandler.removeUpdates();
@@ -220,7 +234,7 @@ public class alarmTimer extends AppCompatActivity {
             public void onFinish() {
                 timerTextView.setText("DONE!");
                 //mp.start();
-              }
+            }
         };
 
         timer.start();
