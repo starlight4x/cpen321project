@@ -25,12 +25,12 @@
         android:id="@+id/toolbar3" />
 
     <TextView
-        android:text="@string/time1_your_trip"
+        android:text="@string/you_will_reach_your_destination"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/title"
         android:textColor="#FFDA24"
-        android:textSize="30sp"
+        android:textSize="24sp"
         android:textAlignment="center"
         android:translationY="10dp"
         android:layout_alignParentTop="true"

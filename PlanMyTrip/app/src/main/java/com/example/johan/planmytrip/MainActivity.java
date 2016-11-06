@@ -5,33 +5,73 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.opengl.Visibility;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
+import android.widget.TextView;
+import android.view.Menu;
+import android.view.MenuItem;
 import com.example.johan.planmytrip.R;
 import com.example.johan.planmytrip.TranslinkHandler;
 
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private String stopNumber;
     private RelativeLayout loadingPanel;
+    Context ctx;
+    TextView tvOutput;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar= (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         loadingPanel = (RelativeLayout) findViewById(R.id.loadingPanel);
         loadingPanel.setVisibility(View.GONE);
 
+        ctx=this;
+        tvOutput =(TextView) findViewById(R.id.busStopNumber);
+
     }
+
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_main, menu);
+
+        SearchView searchview= (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        searchview.setOnQueryTextListener(this);
+        return super.onCreateOptionsMenu(menu);
+
+    }
+
+
+    /**
+     * *SearchView
+     * @param query
+     * @return
+     */
+  @Override
+    public boolean onQueryTextSubmit(String query){return false;}
+
+   @Override
+   public boolean onQueryTextChange(String newText){
+       tvOutput.setText(newText);
+       return false;
+   }
 
     public void nextButtonPressed(View view){
 

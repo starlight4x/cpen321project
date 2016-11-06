@@ -12,12 +12,12 @@
         android:background="#0649B6" />
 
     <TextView
-        android:text="Time Your Trip"
+        android:text="Please select your destination stop"
         android:layout_width="match_parent"
         android:layout_height="72dp"
         android:id="@+id/textView5"
         android:layout_above="@+id/listView"
-        android:textSize="30sp"
+        android:textSize="24sp"
         android:textColor="#FFDA24"
         android:textAlignment="center"
         android:translationY="10dp" />

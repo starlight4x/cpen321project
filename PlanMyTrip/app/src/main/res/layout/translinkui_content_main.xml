@@ -19,7 +19,7 @@
             android:background="#0649B6" />
 
         <TextView
-            android:text="@string/time_your_trip"
+            android:text="@string/please_select_a_bus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView4"

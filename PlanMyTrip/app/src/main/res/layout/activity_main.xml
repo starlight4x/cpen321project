@@ -17,20 +17,6 @@
         android:minHeight="?attr/actionBarSize"
         android:id="@+id/toolbar" />
 
-    <TextView
-        android:text="@string/time_your_trip2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView2"
-        android:textColor="#FFDA24"
-        android:translationY="10dp"
-        android:textSize="30sp"
-        android:textAllCaps="false"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_alignBottom="@+id/toolbar"
-        tools:ignore="RelativeOverlap" />
-
     <Button
         android:text="@string/next"
         android:layout_width="wrap_content"
