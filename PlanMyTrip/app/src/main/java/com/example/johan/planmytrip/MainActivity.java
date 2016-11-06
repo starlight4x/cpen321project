@@ -65,7 +65,39 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
      * @return
      */
   @Override
-    public boolean onQueryTextSubmit(String query){return false;}
+    public boolean onQueryTextSubmit(String query){
+
+      String message1 = query;
+      int sender = 12000;
+
+      if(message1.length() == 5 && isInteger(message1)){
+
+          if (isNetworkAvailable()) {
+              stopNumber = message1;
+              new TranslinkHandler(this).getNextBuses(message1);
+              loadingPanel.setVisibility(View.VISIBLE);
+          }
+          else{
+              Context context = getApplicationContext();
+              CharSequence text = "NO NETWORK AVAILABLE";
+              int duration = Toast.LENGTH_SHORT;
+
+              Toast toast = Toast.makeText(context, text, duration);
+              toast.show();
+          }
+      }
+
+      else{
+          Context context = getApplicationContext();
+          CharSequence text = "INVALID BUS STOP NUMBER";
+          int duration = Toast.LENGTH_SHORT;
+
+          Toast toast = Toast.makeText(context, text, duration);
+          toast.show();
+      }
+
+
+      return false;}
 
    @Override
    public boolean onQueryTextChange(String newText){
