@@ -22,7 +22,7 @@ import android.widget.Toast;
 public class alarmTimer extends AppCompatActivity {
 
 
-
+    CountDownTimer setTimer;
     MediaPlayer mp = new MediaPlayer();
 
     //private int totalTime = 10000;
@@ -64,8 +64,12 @@ public class alarmTimer extends AppCompatActivity {
 
         final TextView mTextField = (TextView) findViewById(R.id.textView3);
 
+        if(setTimer != null){
+            setTimer.cancel();
+            setTimer = null;
+        }
 
-        new CountDownTimer(countTime, 1000) {
+        setTimer = new CountDownTimer(countTime, 1000) {
 
             public void onTick(long millisUntilFinished) {
 
@@ -75,12 +79,17 @@ public class alarmTimer extends AppCompatActivity {
                 int hours = totalSeconds/(60 * 60);
 
                 int minutes;
-                if(hours > 0)
-                minutes = totalSeconds / (hours * 60);
-
-                else
+                if(hours > 0) {
+                    minutes = totalSeconds / (hours * 60);
+                    if(minutes > 60){
+                        minutes = minutes - 60;
+                        hours++;
+                    }
+                }
+                else {
                     minutes = totalSeconds / 60;
 
+                }
                 int seconds = (totalSeconds % 60) ;
                 /*
                  * 90 seconds => 0 hr
