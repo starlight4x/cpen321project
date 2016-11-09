@@ -22,10 +22,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import com.example.johan.planmytrip.R;
 import com.example.johan.planmytrip.TranslinkHandler;
-
+import android.view.ViewGroup;
 import java.util.ArrayList;
-
-
+import android.view.Window;
+import android.view.WindowManager;
+import android.graphics.Color;
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private String stopNumber;
@@ -34,6 +35,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // remove title
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar= (Toolbar) findViewById(R.id.toolbar);
@@ -50,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         SearchView searchview= (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
         searchview.setOnQueryTextListener(this);
+        searchview.setBackgroundColor(Color.WHITE);
         return super.onCreateOptionsMenu(menu);
 
     }
