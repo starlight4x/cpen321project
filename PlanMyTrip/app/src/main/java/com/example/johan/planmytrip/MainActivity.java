@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         SearchView searchview= (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
         searchview.setOnQueryTextListener(this);
+        searchview.setQueryHint("Enter Stopcode...");
         searchview.setBackgroundColor(Color.WHITE);
         return super.onCreateOptionsMenu(menu);
 
