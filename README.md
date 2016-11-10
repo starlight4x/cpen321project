@@ -14,7 +14,8 @@ https://github.com/Farwhyn/cpen321project
 
 ##How to check it out:
 This procedure assumes you have already created a repository on GitHub, or have an existing repository owned by someone else you'd like to contribute to.
-3. On GitHub, navigate to the main page of the repository.  
+
+1. On GitHub, navigate to the main page of the repository.  
 <img width="221" alt="capture1" src="https://cloud.githubusercontent.com/assets/14351017/20193981/55658162-a745-11e6-8a77-985bfa181e80.PNG">
 4. Under your repository name, click Clone or download.  
 <img width="288" alt="captureafter" src="https://cloud.githubusercontent.com/assets/14351017/20193903/f07e48f6-a744-11e6-8cb4-513606f855a0.PNG">
@@ -31,6 +32,7 @@ This procedure assumes you have already created a repository on GitHub, or have 
 `Unpacking objects: 100% (10/10), done.`
 12. The code is under “PlanMyTrip” folder.
 
+##How to buil d the project:
 
 ##How to build the project:
 
@@ -39,9 +41,9 @@ There are two options for building the project:
 * Through an emulator:
 This procedure assumes that you have already installed Android Studio.
 To start an Android emulator such as the default emulator installed in RAD Studio:
-1. Tools->android ->Start the Android SDK Manager (select Start. ...
-2. In the Android SDK Manager, click the Tools menu and select Manage AVDs.
-3. In the Android Virtual Device Manager, select the emulator and click Start.
+   1. Tools->android ->Start the Android SDK Manager (select Start. ...
+   2. In the Android SDK Manager, click the Tools menu and select Manage AVDs.
+   3. In the Android Virtual Device Manager, select the emulator and click Start.
 The app will be uploaded automatically and it can be tested starting by providing whatever expected.
 
 
@@ -49,32 +51,9 @@ The app will be uploaded automatically and it can be tested starting by providin
 
 You can download our app from [here](https://play.google.com/apps/testing/com.planmytrip.johan.planmytrip), or use Google Play and search "Time My Trip"
 
-
 ##How to run tests:
 After open the project, switch to the Project first.
 <img width="136" alt="ctest" src="https://cloud.githubusercontent.com/assets/14351017/20193584/7bd44696-a743-11e6-9e4b-7abfa46acb5f.PNG"> 
-There are two folders that contain different tests for our application.
-1. In the project source code, go to PlanMyTrip\app\src;
-2. Under the “andoridTest” folder, click on “java”, then the “com.example ….” folder, where the Application tests are;
-3. To run the application tests, click “Run” or right click on the file and select “run ‘ApplicationTest’”. Then Android Studio should open the emulator;
-4. Choose a virtual device. If don’t have any 
-*  Click on the “create new virtual device” button;
-*  Under the “Category”, select “Phone”; 
-*  Choose a device then click on “Next”;
-*  Click on “Next” on the following windows then, at last, click on “Finish”;
-*  Wait for it to be created then it should be seen on the window.
-5. Click “OK”
-6. The result will show at the bottom “Run:” console.
-
-
-1. In the project source code, go to PlanMyTrip\app\src;
-2. Under the “test” folder, click on the “java” then “com.example...”;
-3. To run the unit tests, right click on the file and select “run ‘NameofTheTests’” ;
-4. The result should also shown on the bottom “Run:” console.
-You can always switch back to test the application by clicking on the dropdown list and choose app as shown in the following picture:  
-
-<img width="228" alt="capturebs" src="https://cloud.githubusercontent.com/assets/14351017/20193743/43ebab7e-a744-11e6-9eda-f73a2843e996.PNG">
-
 There are two folders that contain different tests for our application.
 
 ####Application Tests
@@ -96,8 +75,9 @@ There are two folders that contain different tests for our application.
 2.Under the “test” folder, click on the “java” then “com.example...”;
 3.To run the unit tests, right click on the file and select “run ‘NameofTheTests’” ;
 4.The result should also shown on the bottom “Run:” console.
-You can always switch back to test the application by clicking on the dropdown list and choose app as shown in the following picture:
-![ScreenShot](Screen Shot 2016-11-10 at 00.22.21.png)
+You can always switch back to test the application by clicking on the dropdown list and choose app as shown in the following picture:  
+<img width="228" alt="capturebs" src="https://cloud.githubusercontent.com/assets/14351017/20193743/43ebab7e-a744-11e6-9eda-f73a2843e996.PNG">
+
 ##Structure of the source code directory:
 Open the project on Android Studio, then:  
 On the top left side, click on the app folder  
