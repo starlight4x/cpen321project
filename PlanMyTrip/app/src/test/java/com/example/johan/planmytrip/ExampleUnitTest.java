@@ -14,11 +14,6 @@ import static org.junit.Assert.*;
  */
 public class ExampleUnitTest {
     @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
-    }
-
-    @Test
     public void distance_funtion_isCorrect(){
         double lat1 = 49.222222;
         double lat2 = 49.222222;
