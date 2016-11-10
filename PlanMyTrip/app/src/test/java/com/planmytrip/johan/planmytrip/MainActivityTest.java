@@ -1,13 +1,15 @@
-package com.example.johan.planmytrip;
+package com.planmytrip.johan.planmytrip;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Created by Navjashan on 09/11/2016.
+ * Created by james on 10/11/2016.
  */
 
-public class mainActivitytest {
-
+public class MainActivityTest {
     private MainActivity tester = new MainActivity();
 
     @Test
