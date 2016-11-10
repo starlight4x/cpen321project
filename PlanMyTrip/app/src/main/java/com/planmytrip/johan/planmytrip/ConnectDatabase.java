@@ -32,6 +32,7 @@ public class ConnectDatabase extends AppCompatActivity{
         String input = myIntent.getStringExtra("stopNo");
         String destination = myIntent.getStringExtra("dest");
 
+
         this.listView = (ListView) findViewById(R.id.listView);
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         databaseAccess.open();
@@ -70,8 +71,8 @@ public class ConnectDatabase extends AppCompatActivity{
 
             }
         });
-    }
 
+    }
 
 
 
