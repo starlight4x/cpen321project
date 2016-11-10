@@ -32,8 +32,6 @@ This procedure assumes you have already created a repository on GitHub, or have 
 `Unpacking objects: 100% (10/10), done.`
 12. The code is under “PlanMyTrip” folder.
 
-##How to buil d the project:
-
 ##How to build the project:
 
 There are two options for building the project:
@@ -53,7 +51,8 @@ You can download our app from [here](https://play.google.com/apps/testing/com.pl
 
 ##How to run tests:
 After open the project, switch to the Project first.
-<img width="136" alt="ctest" src="https://cloud.githubusercontent.com/assets/14351017/20193584/7bd44696-a743-11e6-9e4b-7abfa46acb5f.PNG"> 
+<img width="136" alt="ctest" src="https://cloud.githubusercontent.com/assets/14351017/20193584/7bd44696-a743-11e6-9e4b-7abfa46acb5f.PNG">  
+
 There are two folders that contain different tests for our application.
 
 ####Application Tests
@@ -95,7 +94,8 @@ Select com.example.johan.planmytrip where all the activities are:
 **GPSHandler**: is for checking how far the user is from their destination stop  
 **MainActivity**: this activity is responsible for the launcher page, where the user is expected to enter the bus stop number he/she is at  
 **NextBusesAdapter**: this activity is to generate the list view of the buses provided to the user after he entered the starting bus stop  
-**Stop**: this activity will provide the location of the selected stop  **TranslinkHandler**: this activity is where we are extracting the infos from translink API and parsing them to a JSON object or JSON array  
+**Stop**: this activity will provide the location of the selected stop  
+**TranslinkHandler**: this activity is where we are extracting the infos from translink API and parsing them to a JSON object or JSON array  
 **TranslinkUI**: this activity is for providing the user with the buses that they can take from their starting location
 
 
