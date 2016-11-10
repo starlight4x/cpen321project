@@ -1,18 +1,18 @@
-﻿Time Your Trip Application
+#Time Your Trip Application
 This application is still in development. It will be improved and added more features.
 
 
-What is Time Your Trip Application
+##What is Time Your Trip Application
 This Android mobile application notifies bus passengers when they are arriving at their destination stop. It allows the user to spend the bus ride doing other activities, such as studying and sleeping, without having to constantly check the current stop and without fear of missing their destination stop. 
 The app operates such that when the user gets on a bus, he or she will enter the starting stop he/she at, then the app will allow the user to choose the bus number and the destination stop. After that, it accesses real-time TransLink information to retrieve the estimated time it will take for the user to reach the chosen stop. Then, the app will set an alarm based on the retrieved time. 
 
 
-How to find our source code:
+##How to find our source code:
 Our source code is on a  public github repository, the following is link to Time Your Trip Application:
 https://github.com/Farwhyn/cpen321project 
 
 
-How to check it out:
+##How to check it out:
 This procedure assumes you have already created a repository on GitHub, or have an existing repository owned by someone else you'd like to contribute to.
 1. On GitHub, navigate to the main page of the repository. Clone or download button 
 2. Under your repository name, click Clone or download.
@@ -48,7 +48,7 @@ The app will be uploaded automatically and it can be tested starting by providin
       * Through an actual android phone
 
 
-How to run tests:
+##How to run tests:
 After open the project, switch to the Project first.
  Screen Shot 2016-11-10 at 09.55.50.png 
 
@@ -75,7 +75,7 @@ There are two folders that contain different tests for our application.
 
 
 
-Structure of the source code directory:
+##Structure of the source code directory:
 Open the project on Android Studio , then:
 On the top left side, click on the app folder
 Select the java subfolder
@@ -96,6 +96,6 @@ TranslinkHandler
 TranslinkUI
 
 
-Design patterns used: 
+##Design patterns used: 
       * Observer pattern
         As for the whole system, UI reflects the change of the states of the APP. Every time the state changes, it updates.
