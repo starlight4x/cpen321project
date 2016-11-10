@@ -103,10 +103,15 @@ public class DatabaseAccess {
                 cursor.close();
             }
         }
-        //destination = destination.replaceAll(".(?=.)", "$0%");
+        else {
+            return null;
+        }
+
         if (destination.charAt(1) == ' '){
             destination = destination.substring(0, Math.min(destination.length(), 1)) + destination.substring(2,3);
         }
+
+
         cursor = database.rawQuery("SELECT * FROM trips WHERE route_id=" + route_id + " AND trip_headsign LIKE '%" + destination + "%'", null);
         //cString =  DatabaseUtils.dumpCursorToString(cursor);
 
@@ -120,8 +125,12 @@ public class DatabaseAccess {
                 cursor.close();
             }
         }
-        cursor = database.rawQuery("SELECT stop_id FROM stop_times WHERE trip_id=" + trip_id, null);
-        //cString =  DatabaseUtils.dumpCursorToString(cursor);
+        else {
+            return null;
+        }
+
+
+        cursor = database.rawQuery("SELECT * FROM stop_times WHERE trip_id=" + trip_id, null);
         if(cursor != null) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
@@ -140,6 +149,7 @@ public class DatabaseAccess {
                         c2.close();
                     }
                 }
+
                 cursor.moveToNext();
             }
             cursor.close();

@@ -33,6 +33,7 @@ public class ConnectDatabase extends AppCompatActivity{
         selRoute = myIntent.getStringExtra("selectedRoute"); // will return "FirstKeyValue"
         String input = myIntent.getStringExtra("stopNo");
         String destination = myIntent.getStringExtra("dest");
+
         this.listView = (ListView) findViewById(R.id.listView);
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         databaseAccess.open();
@@ -46,7 +47,8 @@ public class ConnectDatabase extends AppCompatActivity{
                                     int position, long id) {
                 //Intent intent = new Intent(ConnectDatabase.this, ConnectDatabase.class);
                // intent.putExtra("selectedRoute",nextBuses.get(position).getBusNo());
-                //startActivity(intent);
+                //startActivity(intent);)
+
 
                 if(origStop.getStopCode().equals(stops.get(position).getStopCode())) {
                     Context context = getApplicationContext();
@@ -54,6 +56,9 @@ public class ConnectDatabase extends AppCompatActivity{
                     Toast toast = Toast.makeText(context, "This is your current location!", duration);
                     toast.show();
                 }
+
+
+
 
                 else {
 

@@ -5,6 +5,7 @@ package com.example.johan.planmytrip;
  */
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -87,11 +89,19 @@ public class TranslinkUI extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
+                String a = nextBuses.get(position).getDestination();
+                String c = a;
+                if(a.indexOf("'") != -1) {
+                    int i = a.indexOf("'");
+                    c = a.substring(0, i) + "'" + a.substring(i, a.length());
+                }
+
                 Intent intent = new Intent(TranslinkUI.this, ConnectDatabase.class);
-                intent.putExtra("selectedRoute",nextBuses.get(position).getBusNo());
+                intent.putExtra("selectedRoute", nextBuses.get(position).getBusNo());
                 intent.putExtra("stopNo", stopNo);
-                intent.putExtra("dest", nextBuses.get(position).getDestination());
+                intent.putExtra("dest", c);
                 startActivity(intent);
+
 
             }
         });
