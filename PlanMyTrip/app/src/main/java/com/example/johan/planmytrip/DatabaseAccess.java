@@ -102,6 +102,10 @@ public class DatabaseAccess {
             }
         }
 
+        else {
+            return null;
+        }
+
         cursor = database.rawQuery("SELECT * FROM trips WHERE route_id=" + route_id + " AND trip_headsign LIKE '%" + destination + "%'", null);
         if (cursor != null) {
             try {
@@ -112,6 +116,10 @@ public class DatabaseAccess {
             } finally {
                 cursor.close();
             }
+        }
+
+        else {
+            return null;
         }
         cursor = database.rawQuery("SELECT * FROM stop_times WHERE trip_id=" + trip_id, null);
         if(cursor != null) {
@@ -130,6 +138,7 @@ public class DatabaseAccess {
                         c2.close();
                     }
                 }
+
                 cursor.moveToNext();
             }
             cursor.close();
