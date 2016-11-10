@@ -26,7 +26,7 @@ public class GPSHandler {
 
     public GPSHandler(Context context){
         this.context = context;
-        setup();
+        //setup();
     }
 
     public void setup(){

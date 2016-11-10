@@ -29,6 +29,7 @@
         <activity android:name=".TranslinkUI" />
         <activity android:name=".alarmTimer"/>
         <activity android:name=".ConnectDatabase" />
+        <service android:name=".BroadcastService" />
 
     </application>
 

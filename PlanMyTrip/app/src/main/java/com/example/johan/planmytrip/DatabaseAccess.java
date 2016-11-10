@@ -6,6 +6,7 @@ package com.example.johan.planmytrip;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -89,6 +90,7 @@ public class DatabaseAccess {
     public ArrayList<Stop> getStops(String route_num, String destination) {
         ArrayList<Stop> list = new ArrayList<Stop>();
         Cursor cursor = database.rawQuery("SELECT * FROM routes WHERE route_short_name LIKE '%" + route_num + "%'", null);
+        //String cString =  DatabaseUtils.dumpCursorToString(cursor);
 
         if (cursor != null) {
             try {
@@ -101,8 +103,13 @@ public class DatabaseAccess {
                 cursor.close();
             }
         }
-
+        //destination = destination.replaceAll(".(?=.)", "$0%");
+        if (destination.charAt(1) == ' '){
+            destination = destination.substring(0, Math.min(destination.length(), 1)) + destination.substring(2,3);
+        }
         cursor = database.rawQuery("SELECT * FROM trips WHERE route_id=" + route_id + " AND trip_headsign LIKE '%" + destination + "%'", null);
+        //cString =  DatabaseUtils.dumpCursorToString(cursor);
+
         if (cursor != null) {
             try {
                 if (cursor.moveToPosition(2)) {
@@ -113,13 +120,16 @@ public class DatabaseAccess {
                 cursor.close();
             }
         }
-        cursor = database.rawQuery("SELECT * FROM stop_times WHERE trip_id=" + trip_id, null);
+        cursor = database.rawQuery("SELECT stop_id FROM stop_times WHERE trip_id=" + trip_id, null);
+        //cString =  DatabaseUtils.dumpCursorToString(cursor);
         if(cursor != null) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                stop_id = cursor.getString(3);
+                stop_id = cursor.getString(0);
                 Log.d("stop id", stop_id);
                 Cursor c2 = database.rawQuery("SELECT * FROM stops WHERE stop_id=" + stop_id, null);
+                //cString =  DatabaseUtils.dumpCursorToString(c2);
+
                 if (c2 != null) {
                     try {
                         if (c2.moveToFirst()) {

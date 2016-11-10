@@ -37,7 +37,6 @@ public class alarmTimer extends AppCompatActivity {
     boolean alarmEnabled = false;
 
 
-    //private int totalTime = 10000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
