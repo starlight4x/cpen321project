@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.johan.planmytrip.MainActivity"
+    tools:context="com.planmytrip.johan.planmytrip.MainActivity"
     android:background="#edeeef">
 
     <include layout="@layout/translinkui_content_main"
