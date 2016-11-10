@@ -40,6 +40,7 @@ public class alarmTimer extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        //Handles the setting up part for the class
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_timer);
         timerTextView = (TextView) findViewById(R.id.textView3);
@@ -48,8 +49,10 @@ public class alarmTimer extends AppCompatActivity {
         gpsHandler = new GPSHandler(this);
         locationTextView = (TextView) findViewById(R.id.locationTextView);
 
-
+        //Media Player to be used
         mp = MediaPlayer.create(this, R.raw.sound);
+
+        //Alarm configurations for setting and stopping it
         final Button stopAlarm = (Button) this.findViewById(R.id.button3);
         stopAlarm.setText("Set Alarm");
         stopAlarm.setOnClickListener(new View.OnClickListener() {
