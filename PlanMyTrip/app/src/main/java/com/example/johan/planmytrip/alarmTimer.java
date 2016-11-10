@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import static com.example.johan.planmytrip.R.id.button;
+
 /**
  * Created by Navjashan on 29.10.2016.
  */
@@ -35,11 +37,14 @@ public class alarmTimer extends AppCompatActivity {
     private boolean hasSetGPSTo3000 = false;
     private TextView timerTextView;
     boolean alarmEnabled = false;
+    private boolean mpStatus = false;
 
+    Bundle sender;
 
     //private int totalTime = 10000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
 
         //Handles the setting up part for the class
         super.onCreate(savedInstanceState);
@@ -54,7 +59,7 @@ public class alarmTimer extends AppCompatActivity {
         mp = MediaPlayer.create(this, R.raw.sound);
 
         //Alarm configurations for setting and stopping it
-        final Button stopAlarm = (Button) this.findViewById(R.id.button3);
+       final Button stopAlarm = (Button) this.findViewById(R.id.button3);
         stopAlarm.setText("Set Alarm");
         stopAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,6 +68,7 @@ public class alarmTimer extends AppCompatActivity {
                     stopAlarm.setText("Set Alarm");
                     alarmEnabled = false;
                     mp.stop();
+                    mpStatus = false;
                 }
                 else {
                     stopAlarm.setText("Stop Alarm");
@@ -79,7 +85,7 @@ public class alarmTimer extends AppCompatActivity {
         destLat = Double.parseDouble(destination.getLatitude());
         destLong = Double.parseDouble(destination.getLongitude());
 
-
+        //Can be called just with destLat and destLong
         new TranslinkHandler(this).getEstimatedTimeFromGoogle(start.getLatitude(), start.getLongitude(),destination.getLatitude(),destination.getLongitude(), "now");
 
     }
@@ -108,6 +114,7 @@ public class alarmTimer extends AppCompatActivity {
             if (!hasPlayedAlarm) {
                 if (alarmEnabled) {
                     mp.start();
+                    mpStatus = true;
                     Vibrator vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                     vib.vibrate(1500);
 
@@ -185,7 +192,7 @@ public class alarmTimer extends AppCompatActivity {
     }
 
 
-    private void setTimer(final long countTime){
+    public void setTimer(final long countTime){
 
         this.timer = new CountDownTimer(countTime, 1000) {
 
@@ -236,6 +243,9 @@ public class alarmTimer extends AppCompatActivity {
 
             public void onFinish() {
                 timerTextView.setText("DONE!");
+
+                //For the sake of testing
+                mpStatus= true;
                 //mp.start();
             }
         };
@@ -254,4 +264,17 @@ public class alarmTimer extends AppCompatActivity {
 
 
 
+    //Testing Getters
+    public boolean mpInfo(){
+        return mpStatus;
+        }
+
+
+    public boolean getAlarmEnabled(){
+        return alarmEnabled;
+    }
+
+    public Bundle returnbundle(){
+        return sender;
+    }
 }
