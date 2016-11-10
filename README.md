@@ -25,11 +25,11 @@ This procedure assumes you have already created a repository on GitHub, or have 
 8. Type git clone, and then paste the URL you copied in Step 2.
 9. git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
 10. Press Enter. Your local clone will be created.
-11. `git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORYCloning into "Spoon-Knife"...`
-`remote: Counting objects: 10, done.`
-`remote: Compressing objects: 100% (8/8), done.`
-`remove: Total 10 (delta 1), reused 10 (delta 1)`
-`Unpacking objects: 100% (10/10), done.`
+11. `git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORYCloning into "Spoon-Knife"...`  
+`remote: Counting objects: 10, done.`  
+`remote: Compressing objects: 100% (8/8), done.`  
+`remove: Total 10 (delta 1), reused 10 (delta 1)`  
+`Unpacking objects: 100% (10/10), done.`  
 12. The code is under “PlanMyTrip” folder.
 
 ##How to build the project:
@@ -50,7 +50,7 @@ The app will be uploaded automatically and it can be tested starting by providin
 You can download our app from [here](https://play.google.com/apps/testing/com.planmytrip.johan.planmytrip), or use Google Play and search "Time My Trip"
 
 ##How to run tests:
-After open the project, switch to the Project first.
+After open the project, switch to the Project first.  
 <img width="136" alt="ctest" src="https://cloud.githubusercontent.com/assets/14351017/20193584/7bd44696-a743-11e6-9e4b-7abfa46acb5f.PNG">  
 
 There are two folders that contain different tests for our application.
