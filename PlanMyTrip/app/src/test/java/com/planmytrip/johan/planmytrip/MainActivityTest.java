@@ -22,6 +22,10 @@ public class MainActivityTest {
         assertTrue(tester.isInteger("0"));
         assertFalse(tester.isInteger("PleaseFail"));
 
+        //Valid Bus Stop Numbers tester
+        assertTrue(tester.isInteger("52365"));
+        assertTrue(tester.isInteger("56919"));
+        assertTrue(tester.isInteger("50268"));
     }
 
 }
