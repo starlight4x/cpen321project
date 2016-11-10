@@ -35,6 +35,7 @@ public class alarmTimer extends AppCompatActivity {
     private boolean hasSetGPSTo3000 = false;
     private TextView timerTextView;
     boolean alarmEnabled = false;
+    private boolean mpStatus = false;
 
 
     @Override
@@ -252,5 +253,14 @@ public class alarmTimer extends AppCompatActivity {
     }
 
 
+    //Testing Getters
+    public boolean mpInfo(){
+        return mpStatus;
+    }
+
+
+    public boolean getAlarmEnabled(){
+        return alarmEnabled;
+    }
 
 }
