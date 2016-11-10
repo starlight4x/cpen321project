@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         return false;
     }
 
-    private boolean isInteger(String a){
+    public boolean isInteger(String a){
 
         int counter = 0;
 
