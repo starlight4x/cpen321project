@@ -132,13 +132,19 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             return false;
     }
 
+
+    public void showError(String msg) {
+        Context context = getApplicationContext();
+        int duration = Toast.LENGTH_LONG;
+        Toast toast = Toast.makeText(context, msg, duration);
+        toast.show();
+    }
+
+
     public void nextBusesQueryReturned(ArrayList<Bus> result, String errorMsg){
         loadingPanel.setVisibility(View.GONE);
         if(errorMsg != null){
-            Context context = getApplicationContext();
-            int duration = Toast.LENGTH_LONG;
-            Toast toast = Toast.makeText(context, errorMsg, duration);
-            toast.show();
+            showError(errorMsg);
         }
         else {
             Intent intent = new Intent(this, TranslinkUI.class);

@@ -30,8 +30,6 @@ public class GPSDistanceTest {
     @Before
     public void setUp(){
         handler = new GPSHandler(InstrumentationRegistry.getTargetContext());
-
-
     }
 
     @Test
@@ -52,9 +50,5 @@ public class GPSDistanceTest {
 
         assertEquals(0.0, res1,0.1);
         assertEquals(6828.166, res2,10);
-
-
     }
-
-
 }
