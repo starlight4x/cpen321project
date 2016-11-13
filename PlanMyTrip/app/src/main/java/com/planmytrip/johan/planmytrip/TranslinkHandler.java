@@ -28,45 +28,37 @@ import java.util.Map;
 
 public class TranslinkHandler {
 
-
     private AppCompatActivity context;
 
-
+    //constructor
     public TranslinkHandler(AppCompatActivity activity){
         this.context = activity;
     }
 
+    //function that sends an http request for buses based on stopcode
     public void getNextBuses(String stopNo){
-
         String url = "http://api.translink.ca/rttiapi/v1/stops/"+ stopNo + "/estimates?apikey=1Y8IBRRxW0yYIhxyWswH";
         myJSONArrayRequest(url, 1);
-
     }
 
     public void getNearestStops(){
-
         String url = "http://api.translink.ca/rttiapi/v1/stops?apikey=1Y8IBRRxW0yYIhxyWswH&lat=49.187706&long=-122.850060";
         myJSONArrayRequest(url, 2);
-
     }
 
     public void getStopsForRoute() {
         String url = "http://api.translink.ca/rttiapi/v1/routes/351?apikey=1Y8IBRRxW0yYIhxyWswH";
         myJSONObjectRequest(url, 3);
-
     }
 
     public void getCoordinatesForStop(String stopNo) {
         String url = "http://api.translink.ca/rttiapi/v1/stops/" + stopNo +" ?apikey=1Y8IBRRxW0yYIhxyWswH";
         myJSONObjectRequest(url, 5);
-
     }
 
     public void getEstimatedTimeFromGoogle(String startLatitude, String startLongitude, String destLatitude, String destLongitude,String departureTime) {
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="+ startLatitude + "," + startLongitude +"&destinations=" + destLatitude + "," + destLongitude +"&mode=transit&departure_time="+departureTime+"&key=AIzaSyAIKdSYquNCT6LaIAK1iVzv-CxO9HbPzNg";
         myJSONObjectRequest(url, 4);
-
-
     }
 
     public void getStopInfo(String stopNo) {

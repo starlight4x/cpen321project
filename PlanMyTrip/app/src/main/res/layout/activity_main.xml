@@ -21,12 +21,6 @@
         android:minHeight="?attr/actionBarSize"
         android:id="@+id/toolbar" />
 
-
-
-
-
-
-
     <RelativeLayout
         android:id="@+id/loadingPanel"
         android:layout_width="match_parent"

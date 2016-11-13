@@ -20,17 +20,15 @@ import android.view.Window;
 import android.graphics.Color;
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    private String stopNumber;
-    private RelativeLayout loadingPanel;
+    private String stopNumber; //stores the stop number entered by user
+    private RelativeLayout loadingPanel; // loading circle
+    private TranslinkHandler transHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // remove title
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-
+        //requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar= (Toolbar) findViewById(R.id.toolbar);
@@ -38,9 +36,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         loadingPanel = (RelativeLayout) findViewById(R.id.loadingPanel);
         loadingPanel.setVisibility(View.GONE);
-
+        transHandler = new TranslinkHandler(this); //initialize new translink handler class
     }
 
+    //create the searchView layout
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_main, menu);
@@ -50,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         searchview.setQueryHint("Enter Stopcode...");
         searchview.setBackgroundColor(Color.WHITE);
         return super.onCreateOptionsMenu(menu);
-
     }
 
     /**
@@ -60,45 +58,18 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
      */
   @Override
     public boolean onQueryTextSubmit(String query){
+      //initialize http request based on user's stopcode input
+     submitCode(query);
 
-      String message1 = query;
-      int sender = 12000;
-
-      if(message1.length() == 5 && isInteger(message1)){
-
-          if (isNetworkAvailable()) {
-              stopNumber = message1;
-              new TranslinkHandler(this).getNextBuses(message1);
-              loadingPanel.setVisibility(View.VISIBLE);
-          }
-          else{
-              Context context = getApplicationContext();
-              CharSequence text = "NO NETWORK AVAILABLE";
-              int duration = Toast.LENGTH_SHORT;
-
-              Toast toast = Toast.makeText(context, text, duration);
-              toast.show();
-          }
-      }
-
-      else{
-          Context context = getApplicationContext();
-          CharSequence text = "INVALID BUS STOP NUMBER";
-          int duration = Toast.LENGTH_SHORT;
-
-          Toast toast = Toast.makeText(context, text, duration);
-          toast.show();
-      }
-
-
-      return false;}
+      return false;
+  }
 
    @Override
-   public boolean onQueryTextChange(String newText){
-       //tvOutput.setText(newText);
+   public boolean onQueryTextChange(String newText) {
        return false;
    }
 
+    //function that checks if the Wifi is available on the phone
     public boolean isNetworkAvailable() {
         ConnectivityManager cm = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -112,11 +83,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     public boolean isInteger(String a){
-
         int counter = 0;
-
         for(int i = 0; i < a.length(); i++){
-
             if(Character.getNumericValue(a.charAt(i)) >= 0 && Character.getNumericValue(a.charAt(i)) <= 9 ){
                 counter++;
                 continue;
@@ -124,15 +92,29 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             else
                 return  false;
         }
-
         if(counter == a.length())
             return true;
-
         else
             return false;
     }
 
+    //helper function that initializes an http request for buses based on user input
+    public void submitCode(String code) {
+        if(code.length() == 5 && isInteger(code)){
+            if (isNetworkAvailable()) {
+                stopNumber = code; //store the user's input in the global variable
+                transHandler.getNextBuses(code); //initialize a get bus http request based on input
+                loadingPanel.setVisibility(View.VISIBLE); //set the loading wheel to visible
+            }
+            else {
+                showError("NO NETWORK AVAILABLE"); //toast that no network is available
+            }
+        }
+        else{
+            showError("INVALID BUS STOP NUMBER");
+        }
 
+    }
     public void showError(String msg) {
         Context context = getApplicationContext();
         int duration = Toast.LENGTH_LONG;
@@ -140,17 +122,17 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         toast.show();
     }
 
-
+    //function that is called by the TranslinkHandler class when an http request is successfully returned
     public void nextBusesQueryReturned(ArrayList<Bus> result, String errorMsg){
-        loadingPanel.setVisibility(View.GONE);
+        loadingPanel.setVisibility(View.GONE); //remove the loading wheel
         if(errorMsg != null){
-            showError(errorMsg);
+            showError(errorMsg); //show the error returned by the request
         }
         else {
-            Intent intent = new Intent(this, TranslinkUI.class);
-            intent.putExtra("busStopNo", stopNumber);
-            intent.putExtra("busList", result);
-            startActivity(intent);
+            Intent intent = new Intent(this, TranslinkUI.class); //pass the intent to TranslinkUI class
+            intent.putExtra("busStopNo", stopNumber); //store the stop number the user entered
+            intent.putExtra("busList", result); //pass the array of buses that the http request returned
+            startActivity(intent); //transition to the TranslinkUI activity
         }
     }
 }

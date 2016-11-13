@@ -35,25 +35,18 @@ public class TranslinkUI extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.translinkui_activity_main);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
 
         text_view = (TextView) this.findViewById(R.id.text_field);
         text_view.setText("");
 
         Intent myIntent = getIntent(); // gets the previously created intent
-        stopNo = myIntent.getStringExtra("busStopNo"); // will return "FirstKeyValue"
-        nextBuses = (ArrayList<Bus>)myIntent.getSerializableExtra("busList");
-        Collections.sort(nextBuses);
-
-        //new TranslinkHandler(this).getEstimatedTimeFromGoogle("49.187706","-122.850060","49.111706","-122.850060", "now");
-
+        stopNo = myIntent.getStringExtra("busStopNo"); // store the stopcode entered by user earlier
+        nextBuses = (ArrayList<Bus>)myIntent.getSerializableExtra("busList"); //stores the array of buses returned by the translink handler class
+        Collections.sort(nextBuses); //sort the array based on arrival time of buses
 
         listView = (ListView) findViewById(R.id.list_view);
 
         listView.setAdapter(new NextBusesAdapter(this, nextBuses));
-
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
@@ -69,11 +62,8 @@ public class TranslinkUI extends AppCompatActivity {
                 intent.putExtra("stopNo", stopNo);
                 intent.putExtra("dest", c);
                 startActivity(intent);
-
-
             }
         });
-        
     }
 
     public void routeStopsQueryReturned(String result, String errorMsg){
