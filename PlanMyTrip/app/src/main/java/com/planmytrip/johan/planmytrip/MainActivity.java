@@ -27,12 +27,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // remove title
-        //requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar= (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(Color.WHITE);
+        getSupportActionBar().setTitle("Time Your Trip");
 
         loadingPanel = (RelativeLayout) findViewById(R.id.loadingPanel);
         loadingPanel.setVisibility(View.GONE);
