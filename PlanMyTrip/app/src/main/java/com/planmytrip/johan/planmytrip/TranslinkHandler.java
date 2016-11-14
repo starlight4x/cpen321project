@@ -94,13 +94,13 @@ public class TranslinkHandler {
             }
 
             System.out.print(nearestStops.toString());
-            ((MapActivity)context).nearestStopsQueryReturned(nearestStops, null);
+            ((MainActivity)context).nearestStopsQueryReturned(nearestStops, null);
 
 
 
         }
         else{
-            ((MapActivity)context).nearestStopsQueryReturned(null, errorMsg);
+            ((MainActivity)context).nearestStopsQueryReturned(null, errorMsg);
 
         }
 

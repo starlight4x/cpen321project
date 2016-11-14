@@ -3,6 +3,7 @@ package com.planmytrip.johan.planmytrip;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.view.MenuItemCompat;
@@ -22,10 +23,28 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.view.Menu;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import android.view.Window;
 import android.graphics.Color;
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        GoogleMap.OnInfoWindowClickListener,
+        GoogleMap.OnMarkerClickListener {
 
     private String stopNumber; //stores the stop number entered by user
     private RelativeLayout loadingPanel; // loading circle
@@ -38,10 +57,34 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private String mActivityTitle = "Time Your Trip";
     private String[] osArray = { "Find Bus Stops Around You", "View Your Location", "Show Bus Routes", "Show Skytrain"};
 
+    private GoogleMap mMap;
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLastLocation;
+
+    private final int[] MAP_TYPES = {
+            GoogleMap.MAP_TYPE_SATELLITE,
+            GoogleMap.MAP_TYPE_NORMAL,
+            GoogleMap.MAP_TYPE_HYBRID,
+            GoogleMap.MAP_TYPE_TERRAIN,
+            GoogleMap.MAP_TYPE_NONE};
+    private int curMapTypeIndex = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if(mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
+        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         Toolbar toolbar= (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -65,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
         mDrawerList.setAdapter(mAdapter);
-
+/*
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -77,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
             }
         });
+        */
     }
 
     private void setupDrawer() {
@@ -233,4 +277,128 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             startActivity(intent); //transition to the TranslinkUI activity
         }
     }
+
+        //------------------------------MAP STUFF (JAMES) ---------------------------------------------//
+        @Override
+        public void onConnected(Bundle bundle) {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+            if (mLastLocation != null) {
+                //Toast.makeText(getApplicationContext(), mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
+                initCamera(mLastLocation);
+                if(mLastLocation != null) {
+                    DecimalFormat df = new DecimalFormat("#.####");
+                    df.setRoundingMode(RoundingMode.CEILING);
+                    String la = df.format(mLastLocation.getLatitude());
+                    String lo = df.format(mLastLocation.getLongitude());
+
+                    submitArea(la, lo);
+                    Toast.makeText(getApplicationContext(), la + " " + lo, Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "Please turn on Location Service", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
+        @Override
+        public void onConnectionSuspended(int i) {
+
+        }
+
+        @Override
+        public void onConnectionFailed(ConnectionResult connectionResult) {
+
+        }
+
+        @Override
+        public void onInfoWindowClick(Marker marker) {
+            submitCode(marker.getTitle());
+        }
+
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            marker.showInfoWindow();
+            return true;
+        }
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        initListeners();
+    }
+
+    public void submitArea(String lat, String lon) {
+        if (isNetworkAvailable()) {
+            transHandler.getNearestStops(lat, lon);
+
+        } else {
+            Toast.makeText(getApplicationContext(),"NO NETWORK AVAILABLE",Toast.LENGTH_SHORT).show(); //toast that no network is available
+        }
+    }
+
+    public void nearestStopsQueryReturned(ArrayList<Stop> result, String errorMsg){
+        if(errorMsg != null){
+            Toast.makeText(getApplicationContext(), "Cannot obtain current location", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            setMarkers(result);
+        }
+    }
+
+    private void setMarkers(ArrayList<Stop> result) {
+        //Toast.makeText(getApplicationContext(), "blah", Toast.LENGTH_SHORT).show();
+        double a, b;
+        for(int i = 0; i < result.size(); i++) {
+            a = Double.parseDouble(result.get(i).getLatitude());
+            b = Double.parseDouble(result.get(i).getLongitude());
+            MarkerOptions options = new MarkerOptions().position(new LatLng(a, b));
+            options.title(result.get(i).getStopCode());
+
+            options.icon(BitmapDescriptorFactory.defaultMarker());
+            mMap.addMarker(options);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+
+        super.onStop();
+        if( mGoogleApiClient != null && mGoogleApiClient.isConnected() ) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    private void initCamera( Location location ) {
+        CameraPosition position = CameraPosition.builder()
+                .target( new LatLng( location.getLatitude(),
+                        location.getLongitude() ) )
+                .zoom( 16f )
+                .bearing( 0.0f )
+                .tilt( 0.0f )
+                .build();
+
+        mMap.animateCamera( CameraUpdateFactory
+                .newCameraPosition( position ), null );
+
+        mMap.setMapType( MAP_TYPES[curMapTypeIndex] );
+        mMap.setTrafficEnabled( true );
+        mMap.setMyLocationEnabled( true );
+        mMap.getUiSettings().setZoomControlsEnabled( true );
+
+    }
+    private void initListeners() {
+        mMap.setOnMarkerClickListener(this);
+        mMap.setOnInfoWindowClickListener( this );
+    }
+
+
 }
