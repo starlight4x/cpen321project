@@ -70,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(MainActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, MapActivity.class); //pass the intent to TranslinkUI class
+
+                startActivity(intent);
             }
         });
     }

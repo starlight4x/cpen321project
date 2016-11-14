@@ -13,12 +13,6 @@
     android:layout_height="match_parent"
     tools:context="com.planmytrip.johan.planmytrip.MainActivity">
 
-    <fragment
-        android:id="@+id/map"
-        android:name="com.planmytrip.johan.planmytrip.MapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
 
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"

@@ -1,10 +1,12 @@
 package com.planmytrip.johan.planmytrip;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Toast;
 
@@ -44,6 +46,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             GoogleMap.MAP_TYPE_NONE };
     private int curMapTypeIndex = 1;
 
+
+
     @Override
     public void onStart() {
         super.onStart();
@@ -70,15 +74,14 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Intent j = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        this.startActivity(j);
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        mCurrentLocation = new Location( "" );
-        mCurrentLocation.setLatitude(37.422535);
-        mCurrentLocation.setLongitude(-122.084804);
-        initCamera(mCurrentLocation);
+        Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        this.startActivity(i);
 
     }
 
