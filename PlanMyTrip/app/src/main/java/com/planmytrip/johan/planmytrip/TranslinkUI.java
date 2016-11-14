@@ -75,14 +75,6 @@ public class TranslinkUI extends AppCompatActivity {
         }
     }
 
-    public void nearestStopsQueryReturned(ArrayList<String> result, String errorMsg){
-        if(errorMsg != null){
-            text_view.setText(errorMsg);
-        }
-        else {
-            text_view.setText(result.toString());
-        }
-    }
 
     public void nextBusesQueryReturned(ArrayList<Bus> result, String errorMsg){
         if(errorMsg != null){

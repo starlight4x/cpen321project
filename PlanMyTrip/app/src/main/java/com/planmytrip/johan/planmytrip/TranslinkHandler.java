@@ -41,8 +41,8 @@ public class TranslinkHandler {
         myJSONArrayRequest(url, 1);
     }
 
-    public void getNearestStops(){
-        String url = "http://api.translink.ca/rttiapi/v1/stops?apikey=1Y8IBRRxW0yYIhxyWswH&lat=49.187706&long=-122.850060";
+    public void getNearestStops(String lat, String lon){
+        String url = "http://api.translink.ca/rttiapi/v1/stops?apikey=1Y8IBRRxW0yYIhxyWswH&lat="+ lat + "&long=" + lon + "&radius=300";
         myJSONArrayRequest(url, 2);
     }
 
@@ -74,18 +74,19 @@ public class TranslinkHandler {
     }
 
     private void getNearestStopsReturned(JSONArray response, String errorMsg){
-        System.out.print(response.toString());
+        //System.out.print(response.toString());
         if (errorMsg == null) {
-            ArrayList<String> nearestStops = new ArrayList<String>();
+            ArrayList<Stop> nearestStops = new ArrayList<Stop>();
             for (int i = 0; i < response.length(); i++) {
                 JSONObject jsonobject;
                 try {
                     jsonobject = response.getJSONObject(i);
                     String stopNo = jsonobject.getString("StopNo");
                     String stopName = jsonobject.getString("Name");
-                    String distance = jsonobject.getString("Distance");
-                    String result = stopNo + " "+ stopName + " " + distance;
-                    nearestStops.add(result);
+                    String latitude = jsonobject.getString("Latitude");
+                    String longitude = jsonobject.getString("Longitude");
+                    Stop stop = new Stop(null, stopNo, stopName, latitude, longitude);
+                    nearestStops.add(stop);
 
                 } catch (JSONException e) {
                     System.out.print("Error parsing JSONArray" + e.toString());
@@ -93,13 +94,13 @@ public class TranslinkHandler {
             }
 
             System.out.print(nearestStops.toString());
-            ((TranslinkUI)context).nearestStopsQueryReturned(nearestStops, null);
+            ((MapActivity)context).nearestStopsQueryReturned(nearestStops, null);
 
 
 
         }
         else{
-            ((TranslinkUI)context).nearestStopsQueryReturned(null, errorMsg);
+            ((MapActivity)context).nearestStopsQueryReturned(null, errorMsg);
 
         }
 

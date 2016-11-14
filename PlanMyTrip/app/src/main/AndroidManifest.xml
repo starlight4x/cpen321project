@@ -28,7 +28,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".finalQuery" />
         <activity android:name=".TranslinkUI" />
         <activity android:name=".alarmTimer" />
         <activity android:name=".ConnectDatabase" />

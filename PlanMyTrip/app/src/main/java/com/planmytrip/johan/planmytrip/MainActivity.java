@@ -35,7 +35,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private DrawerLayout mDrawerLayout;
     private ArrayAdapter<String> mAdapter;
     private ActionBarDrawerToggle mDrawerToggle;
-    private String mActivityTitle;
+    private String mActivityTitle = "Time Your Trip";
+    private String[] osArray = { "Find Bus Stops Around You", "View Your Location", "Show Bus Routes", "Show Skytrain"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         Toolbar toolbar= (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
-        getSupportActionBar().setTitle("Time Your Trip");
+        getSupportActionBar().setTitle(mActivityTitle);
 
         loadingPanel = (RelativeLayout) findViewById(R.id.loadingPanel);
         loadingPanel.setVisibility(View.GONE);
@@ -53,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         //below is for sliding menu
         mDrawerList = (ListView)findViewById(R.id.navList);
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        mActivityTitle = getTitle().toString();
 
         addDrawerItems();
         setupDrawer();
@@ -62,17 +62,19 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         getSupportActionBar().setHomeButtonEnabled(true);
     }
     private void addDrawerItems() {
-        String[] osArray = { "Android", "iOS", "Windows", "OS X", "Linux" };
+
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
         mDrawerList.setAdapter(mAdapter);
 
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, MapActivity.class); //pass the intent to TranslinkUI class
+                if(osArray[position].equals("View Your Location")) {
+                    Toast.makeText(MainActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, MapActivity.class); //pass the intent to TranslinkUI class
 
-                startActivity(intent);
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -161,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
    @Override
    public boolean onQueryTextChange(String newText) {
+
        return false;
    }
 
