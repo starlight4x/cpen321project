@@ -93,13 +93,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             showAlert();
         }
 
-        if(mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+
 
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -337,7 +337,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     Toast.makeText(getApplicationContext(), la + " " + lo, Toast.LENGTH_LONG).show();
                 }
             } else {
-                Toast.makeText(getApplicationContext(), "Please turn on Location Service", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Please turn on Location Service", Toast.LENGTH_SHORT).show();
+                showAlert();
             }
 
         }
@@ -367,6 +368,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+       // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng( 49.2827, 123.1207), 10));
         initListeners();
     }
 
@@ -395,7 +397,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             a = Double.parseDouble(result.get(i).getLatitude());
             b = Double.parseDouble(result.get(i).getLongitude());
             MarkerOptions options = new MarkerOptions().position(new LatLng(a, b));
-            options.title(result.get(i).getStopCode());
+            options.title(result.get(i).getStopCode()).snippet(result.get(i).getName());
 
             options.icon(BitmapDescriptorFactory.defaultMarker());
             mMap.addMarker(options);
@@ -422,14 +424,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         CameraPosition position = CameraPosition.builder()
                 .target( new LatLng( location.getLatitude(),
                         location.getLongitude() ) )
-                .zoom( 16f )
+                .zoom( 16 )
                 .bearing( 0.0f )
                 .tilt( 0.0f )
                 .build();
 
-        mMap.animateCamera( CameraUpdateFactory
-                .newCameraPosition( position ), null );
-
+        mMap.animateCamera( CameraUpdateFactory.newCameraPosition( position ), null );
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng( location.getLatitude(),location.getLongitude() ), 15));
         mMap.setMapType( MAP_TYPES[curMapTypeIndex] );
         mMap.setTrafficEnabled( true );
         mMap.setMyLocationEnabled( true );
