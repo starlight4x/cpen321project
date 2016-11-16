@@ -1,6 +1,7 @@
 package com.planmytrip.johan.planmytrip;
 
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
@@ -21,6 +22,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
 
 /**
  * Created by johan on 20.10.2016.
@@ -28,10 +30,10 @@ import java.util.Map;
 
 public class TranslinkHandler {
 
-    private AppCompatActivity context;
+    private Context context;
 
     //constructor
-    public TranslinkHandler(AppCompatActivity activity){
+    public TranslinkHandler(Context activity){
         this.context = activity;
     }
 
@@ -174,13 +176,13 @@ public class TranslinkHandler {
 
             System.out.println("hallo hallo hallo hallo " +durationInSeconds + "!!!!!!");
 
-            ((alarmTimer)context).estimatedTimeReturned(durationInSeconds, null);
+            ((TimerService)context).estimatedTimeReturned(durationInSeconds, null);
 
 
 
         }
         else{
-            ((alarmTimer)context).estimatedTimeReturned(null, errorMsg);
+            ((TimerService)context).estimatedTimeReturned(null, errorMsg);
 
         }
 
@@ -224,11 +226,11 @@ public class TranslinkHandler {
                 System.out.print("Error parsing JSONArray" + e.toString());
             }
 
-            ((alarmTimer)context).getNearestBusStopServingRouteReturned(latitude, longitude, null);
+            ((TimerService)context).getNearestBusStopServingRouteReturned(latitude, longitude, null);
         }
         else{
             System.out.println("error");
-            ((alarmTimer)context).getNearestBusStopServingRouteReturned(null, null, errorMsg);
+            ((TimerService)context).getNearestBusStopServingRouteReturned(null, null, errorMsg);
         }
     }
 

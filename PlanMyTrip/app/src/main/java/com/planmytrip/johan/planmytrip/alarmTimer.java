@@ -1,15 +1,26 @@
 package com.planmytrip.johan.planmytrip;
 
+import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,22 +31,91 @@ import android.widget.TextView;
 
 public class alarmTimer extends AppCompatActivity {
 
-    private MediaPlayer mp = new MediaPlayer();
-    private CountDownTimer timer;
     private TextView locationTextView;
-    private double destLat;
-    private double destLong;
-    private String routeNo;
-    private Handler myHandler;
-    private Runnable runnable;
-    private GPSHandler gpsHandler;
-    private boolean hasPlayedAlarm = false;
-    private boolean hasSetGPSTo10000 = false;
-    private boolean hasSetGPSTo5000 = false;
-    private boolean hasSetGPSTo3000 = false;
     private TextView timerTextView;
     boolean alarmEnabled = false;
-    private boolean mpStatus = false;
+    private Intent intentFromLastActivity;
+
+
+
+    private TimerService myServiceBinder;
+    public ServiceConnection myConnection = new ServiceConnection() {
+
+        public void onServiceConnected(ComponentName className, IBinder binder) {
+            myServiceBinder = ((TimerService.MyBinder) binder).getService();
+            Log.d("ServiceConnection","connected");
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            Log.d("ServiceConnection","disconnected");
+            myServiceBinder = null;
+        }
+    };
+
+    public Handler myHandler1 = new Handler() {
+        public void handleMessage(Message message) {
+            //Bundle data = message.getData();
+            switch (message.arg1){
+                case 1:
+                    updateClock(message);
+                    break;
+                case 2:
+                    updateDistance(message);
+                    break;
+                case 3:
+                    requestGPS();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    private void requestGPS(){
+        Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+    }
+
+    public void doBindService() {
+        Intent intent = null;
+        intent = new Intent(this, TimerService.class);
+        Messenger messenger = new Messenger(myHandler1);
+        intent.putExtra("MESSENGER", messenger);
+        bindService(intent, myConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    public void doStartService(Intent timeIntent){
+        Intent intent = new Intent(this, TimerService.class);
+        Stop start = (Stop)timeIntent.getSerializableExtra("startingStop");
+        Stop destination = (Stop)timeIntent.getSerializableExtra("destination");
+        String routeNo = timeIntent.getStringExtra("selRoute");
+        intent.putExtra("startingStop", start);
+        intent.putExtra("destination", destination);
+        intent.putExtra("selRoute", routeNo);
+
+        startService(intent);
+
+    }
+
+
+    @Override
+    protected void onResume() {
+
+        Log.d("activity", "onResume");
+        if (myServiceBinder == null) {
+            doBindService();
+        }
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d("activity", "onPause");
+        if (myServiceBinder != null) {
+            unbindService(myConnection);
+            myServiceBinder = null;
+        }
+        super.onPause();
+    }
 
 
     @Override
@@ -43,15 +123,20 @@ public class alarmTimer extends AppCompatActivity {
 
         //Handles the setting up part for the class
         super.onCreate(savedInstanceState);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET}
+                        , 10);
+            }
+        }
+
+        intentFromLastActivity  = getIntent();
+        doStartService(intentFromLastActivity);
+        doBindService();
         setContentView(R.layout.activity_alarm_timer);
         timerTextView = (TextView) findViewById(R.id.textView3);
         timerTextView.setText("Loading...");
-        myHandler = new Handler();
-        gpsHandler = new GPSHandler(this);
         locationTextView = (TextView) findViewById(R.id.locationTextView);
-
-        //Media Player to be used
-        mp = MediaPlayer.create(this, R.raw.sound);
 
         //Alarm configurations for setting and stopping it
         final Button stopAlarm = (Button) this.findViewById(R.id.button3);
@@ -62,114 +147,25 @@ public class alarmTimer extends AppCompatActivity {
                 if (alarmEnabled){
                     stopAlarm.setText("Set Alarm");
                     alarmEnabled = false;
-                    mp.stop();
+                    myServiceBinder.setAlarmEnabled(false);
                 }
                 else {
                     stopAlarm.setText("Stop Alarm");
                     alarmEnabled = true;
+                    myServiceBinder.setAlarmEnabled(true);
                 }
             }
         });
 
 
-        Intent timeIntent  = getIntent();
-        Stop start = (Stop)timeIntent.getSerializableExtra("startingStop");
-        Stop destination = (Stop)timeIntent.getSerializableExtra("destination");
-        routeNo = timeIntent.getStringExtra("selRoute");
-        destLat = Double.parseDouble(destination.getLatitude());
-        destLong = Double.parseDouble(destination.getLongitude());
-
-
-        new TranslinkHandler(this).getEstimatedTimeFromGoogle(start.getLatitude(), start.getLongitude(),destination.getLatitude(),destination.getLongitude(), "now");
-
     }
 
-
-    public void getNearestBusStopServingRouteReturned(String latitude, String longitude, String errorMsg){
-        if (errorMsg == null){
-            new TranslinkHandler(this).getEstimatedTimeFromGoogle(latitude,longitude,String.valueOf(destLat),String.valueOf(destLong), "now");
-        }
-        else{
-            System.out.println(errorMsg);
-        }
+    public void updateClock(Message message){
+        timerTextView.setText((String)message.obj);
     }
 
-
-    public void gotGPSUpdate(Location location){
-        System.out.println("gotGPSUpdate");
-
-        double distance = gpsHandler.distance(destLat,location.getLatitude(),destLong,location.getLongitude());
-
-        if(distance <300){
-            locationTextView.setText("Distance to destination: " + String.format("%.0f", distance) + " Meters");
-            if (runnable != null) {
-                myHandler.removeCallbacks(runnable);
-            }
-            if (!hasPlayedAlarm) {
-                if (alarmEnabled) {
-                    mp.start();
-                    Vibrator vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                    vib.vibrate(1500);
-
-                    hasPlayedAlarm = true;
-                }
-            }
-            if(!hasSetGPSTo3000) {
-                gpsHandler.removeUpdates();
-                gpsHandler.requestGPSUpdates(1000);
-                hasSetGPSTo3000 = true;
-            }
-
-        }
-        else if(distance < 500){
-            locationTextView.setText("Distance to destination: " + distance + " Meters");
-            if (runnable != null) {
-                myHandler.removeCallbacks(runnable);
-            }
-            if(!hasSetGPSTo5000) {
-                gpsHandler.removeUpdates();
-                gpsHandler.requestGPSUpdates(5000);
-                hasSetGPSTo5000 = true;
-            }
-
-
-        }
-        else if ( distance < 1000){
-            locationTextView.setText("Distance to destination: " + distance + " Meters");
-            gpsHandler.removeUpdates();
-            if (runnable != null) {
-                myHandler.removeCallbacks(runnable);
-            }
-            if (!hasSetGPSTo10000) {
-                gpsHandler.requestGPSUpdates(10000);
-                hasSetGPSTo10000 = true;
-            }
-
-        }
-        else{
-            hasSetGPSTo10000 = false;
-            hasSetGPSTo5000 = false;
-            hasSetGPSTo3000 = false;
-            gpsHandler.removeUpdates();
-            new TranslinkHandler(this).getNearestBusStopServingRoute(location.getLatitude(),location.getLongitude(),routeNo);
-        }
-    }
-
-
-    public void estimatedTimeReturned(String duration, String errorMsg) {
-        if (errorMsg == null) {
-            if (timer != null) {
-                timer.cancel();
-            }
-            gpsHandler.removeUpdates();
-            if (runnable != null) {
-                myHandler.removeCallbacks(runnable);
-            }
-            setTimer(Integer.parseInt(duration) * 1000);
-        }
-        else{
-            timerTextView.setText("A server error occured. " + errorMsg);
-        }
+    public void updateDistance(Message message){
+        locationTextView.setText((String)message.obj);
     }
 
     @Override
@@ -177,90 +173,17 @@ public class alarmTimer extends AppCompatActivity {
         switch (requestCode){
             case 10:
                 System.out.println("In onRequestPermissionResult case 10");
-                gpsHandler.requestGPSUpdates(5000);
                 break;
             default:
                 break;
         }
     }
 
-
-    private void setTimer(final long countTime){
-
-        this.timer = new CountDownTimer(countTime, 1000) {
-
-            long nextGPSUpdate = countTime;
-
-            public void onTick(long millisUntilFinished) {
-
-                if (millisUntilFinished<nextGPSUpdate){
-
-
-                    nextGPSUpdate = millisUntilFinished/2;
-
-                    if(!(hasSetGPSTo10000||hasSetGPSTo3000||hasSetGPSTo5000)) {
-                        runnable = new Runnable() {
-
-                            @Override
-                            public void run() {
-                                gpsHandler.requestGPSUpdates(10000);
-                            }
-                        };
-
-                        myHandler.postDelayed(runnable, nextGPSUpdate - 10000);
-                    }
-
-                }
-
-
-
-
-                int totalSeconds =  (int)millisUntilFinished/1000;
-
-                int hours =  (totalSeconds % 86400) / 3600;
-                int minutes = (totalSeconds % 3600) / 60;
-                int seconds = (totalSeconds % 60);
-
-                if(hours > 0)
-                    timerTextView.setText( hours + " hours\n"  + minutes + " minutes\n" + seconds + " seconds!" );
-
-                else if(minutes > 0)
-                    timerTextView.setText( minutes + " minutes\n" + seconds + " seconds!" );
-
-                else
-                    timerTextView.setText(seconds + " seconds!" );
-
-            }
-
-
-
-            public void onFinish() {
-                timerTextView.setText("DONE!");
-                //mp.start();
-            }
-        };
-
-        timer.start();
-
-    }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        myHandler.removeCallbacks(runnable);
-        timer.cancel();
-        gpsHandler.removeUpdates();
+        stopService(new Intent(this,TimerService.class));
     }
 
-
-    //Testing Getters
-    public boolean mpInfo(){
-        return mpStatus;
-    }
-
-
-    public boolean getAlarmEnabled(){
-        return alarmEnabled;
-    }
 
 }

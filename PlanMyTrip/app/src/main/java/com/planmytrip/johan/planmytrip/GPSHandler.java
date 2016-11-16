@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 
+import java.util.Timer;
+
 import static android.content.Context.LOCATION_SERVICE;
 
 /**
@@ -35,7 +37,7 @@ public class GPSHandler {
         listener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                ((alarmTimer)context).gotGPSUpdate(location);
+                ((TimerService)context).gotGPSUpdate(location);
             }
 
             @Override
@@ -51,8 +53,7 @@ public class GPSHandler {
             @Override
             public void onProviderDisabled(String s) {
 
-                Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                context.startActivity(i);
+                ((TimerService)context).gpsProviderDisabled();
             }
         };
 
@@ -73,28 +74,25 @@ public class GPSHandler {
         return distance;
     }
 
-    void requestGPSUpdates(long time){
+    public boolean requestGPSUpdates(long time){
         // first check for permissions
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                ((alarmTimer)context).requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET}
-                        ,10);
             }
-            return;
+            return false;
         }
         locationManager.requestLocationUpdates("gps", time, 0, listener);
+        return true;
     }
 
-    void removeUpdates(){
+    public boolean removeUpdates(){
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                ((alarmTimer)context).requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET}
-                        ,10);
             }
-            return;
+            return false;
         }
         locationManager.removeUpdates(listener);
-
+        return true;
     }
 
 

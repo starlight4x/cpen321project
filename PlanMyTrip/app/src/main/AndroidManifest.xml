@@ -43,6 +43,7 @@
             android:name=".MapActivity"
             android:label="@string/title_activity_map"
             android:theme="@style/AppTheme"></activity>
+        <service android:name=".TimerService" />
     </application>
 
 </manifest>
