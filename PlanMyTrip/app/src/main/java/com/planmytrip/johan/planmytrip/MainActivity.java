@@ -1,9 +1,14 @@
 package com.planmytrip.johan.planmytrip;
 
+import android.content.DialogInterface;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.view.MenuItemCompat;
@@ -69,10 +74,24 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             GoogleMap.MAP_TYPE_NONE};
     private int curMapTypeIndex = 1;
 
+
+    private GPSchecker locationManager;
+    private LocationManager locationManagerContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        locationManagerContext = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+                            if(locationManager == null) {
+                            locationManager = new GPSchecker(locationManagerContext);
+                      }
+
+        if(!locationManager.isLocationEnabled()){
+            showAlert();
+        }
 
         if(mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -104,6 +123,28 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
     }
+
+
+    public void showAlert() {
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Enable Location")
+                .setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " +
+                        "use this app")
+                .setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(myIntent);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    }
+                });
+        dialog.show();
+    }
+
     private void addDrawerItems() {
 
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
