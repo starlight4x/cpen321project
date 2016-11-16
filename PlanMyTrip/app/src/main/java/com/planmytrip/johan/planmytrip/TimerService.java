@@ -34,6 +34,7 @@ public class TimerService extends Service {
 
 
     private MediaPlayer mp = new MediaPlayer();
+    Vibrator vib;
     private CountDownTimer timer;
     private double destLat;
     private double destLong;
@@ -45,7 +46,7 @@ public class TimerService extends Service {
     private boolean hasSetGPSTo10000 = false;
     private boolean hasSetGPSTo5000 = false;
     private boolean hasSetGPSTo3000 = false;
-    boolean alarmEnabled = false;
+    boolean alarmEnabled = true;
 
     private final IBinder mBinder = new MyBinder();
     private Messenger outMessenger;
@@ -53,10 +54,10 @@ public class TimerService extends Service {
     @Override
     public IBinder onBind(Intent arg0) {
         Bundle extras = arg0.getExtras();
-        Log.d("service","onBind");
+        Log.d("service", "onBind");
         // Get messager from the Activity
         if (extras != null) {
-            Log.d("service","onBind with extra");
+            Log.d("service", "onBind with extra");
             outMessenger = (Messenger) extras.get("MESSENGER");
 
         }
@@ -73,56 +74,46 @@ public class TimerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Bundle extras = intent.getExtras();
-        Log.d("service","onBind");
+        Log.d("service", "onBind");
         // Get messager from the Activity
         if (extras != null) {
-            Log.d("service","onBind with extra");
-            outMessenger = (Messenger) extras.get("MESSENGER");
+            Log.d("service", "onBind with extra");
             myHandler = new Handler();
             gpsHandler = new GPSHandler(this);
+            vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
             //Media Player to be used
             mp = MediaPlayer.create(this, R.raw.sound);
 
-            Stop start = (Stop)intent.getSerializableExtra("startingStop");
-            Stop destination = (Stop)intent.getSerializableExtra("destination");
+            Stop start = (Stop) intent.getSerializableExtra("startingStop");
+            Stop destination = (Stop) intent.getSerializableExtra("destination");
             routeNo = intent.getStringExtra("selRoute");
             destLat = Double.parseDouble(destination.getLatitude());
             destLong = Double.parseDouble(destination.getLongitude());
 
 
-            new TranslinkHandler(this).getEstimatedTimeFromGoogle(start.getLatitude(), start.getLongitude(),destination.getLatitude(),destination.getLongitude(), "now");
+            new TranslinkHandler(this).getEstimatedTimeFromGoogle(start.getLatitude(), start.getLongitude(), destination.getLatitude(), destination.getLongitude(), "now");
 
         }
 
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void getNearestBusStopServingRouteReturned(String latitude, String longitude, String errorMsg){
-        if (errorMsg == null){
-            new TranslinkHandler(this).getEstimatedTimeFromGoogle(latitude,longitude,String.valueOf(destLat),String.valueOf(destLong), "now");
-        }
-        else{
+    public void getNearestBusStopServingRouteReturned(String latitude, String longitude, String errorMsg) {
+        if (errorMsg == null) {
+            new TranslinkHandler(this).getEstimatedTimeFromGoogle(latitude, longitude, String.valueOf(destLat), String.valueOf(destLong), "now");
+        } else {
             System.out.println(errorMsg);
         }
     }
 
-    public void gotGPSUpdate(Location location){
+    public void gotGPSUpdate(Location location) {
         System.out.println("gotGPSUpdate");
 
-        double distance = gpsHandler.distance(destLat,location.getLatitude(),destLong,location.getLongitude());
-        try {
-            Message message = new Message();
-            message.arg1 = 2;
-            message.obj = "Distance to destination: " + String.format("%.0f", distance) + " Meters";
-            outMessenger.send(message);
-        }
-        catch(RemoteException e){
+        double distance = gpsHandler.distance(destLat, location.getLatitude(), destLong, location.getLongitude());
 
-        }
-
-        if(distance <300){
-            //locationTextView.setText("Distance to destination: " + String.format("%.0f", distance) + " Meters");
+        if (distance < 300) {
+            sendMessage(2, "Distance to destination: " + String.format("%.0f", distance) + " Meters");
 
             if (runnable != null) {
                 myHandler.removeCallbacks(runnable);
@@ -130,58 +121,55 @@ public class TimerService extends Service {
             if (!hasPlayedAlarm) {
                 if (alarmEnabled) {
                     mp.start();
-                    Vibrator vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                    vib.vibrate(1500);
+                    vib.vibrate(5000);
 
                     hasPlayedAlarm = true;
                 }
             }
-            if(!hasSetGPSTo3000) {
+            if (!hasSetGPSTo3000) {
                 gpsHandler.removeUpdates();
-                gpsHandler.requestGPSUpdates(1000);
+                gpsHandler.requestGPSUpdates(500);
                 hasSetGPSTo3000 = true;
             }
 
-        }
-        else if(distance < 500){
-            //locationTextView.setText("Distance to destination: " + distance + " Meters");
+        } else if (distance < 500) {
+            sendMessage(2, "Distance to destination: " + String.format("%.0f", distance) + " Meters");
             if (runnable != null) {
                 myHandler.removeCallbacks(runnable);
             }
-            if(!hasSetGPSTo5000) {
+            if (!hasSetGPSTo5000) {
                 gpsHandler.removeUpdates();
-                gpsHandler.requestGPSUpdates(5000);
+                gpsHandler.requestGPSUpdates(1000);
                 hasSetGPSTo5000 = true;
             }
 
 
-        }
-        else if ( distance < 1000){
-            //locationTextView.setText("Distance to destination: " + distance + " Meters");
+        } else if (distance < 1200) {
+            sendMessage(2, "Distance to destination: " + String.format("%.0f", distance) + " Meters");
 
             gpsHandler.removeUpdates();
             if (runnable != null) {
                 myHandler.removeCallbacks(runnable);
             }
             if (!hasSetGPSTo10000) {
-                gpsHandler.requestGPSUpdates(10000);
+                gpsHandler.requestGPSUpdates(3000);
                 hasSetGPSTo10000 = true;
             }
 
-        }
-        else{
+        } else {
             hasSetGPSTo10000 = false;
             hasSetGPSTo5000 = false;
             hasSetGPSTo3000 = false;
             gpsHandler.removeUpdates();
-            new TranslinkHandler(this).getNearestBusStopServingRoute(location.getLatitude(),location.getLongitude(),routeNo);
+            new TranslinkHandler(this).getNearestBusStopServingRoute(location.getLatitude(), location.getLongitude(), routeNo);
         }
     }
 
-    public void setAlarmEnabled(boolean alarmEnabled){
+    public void setAlarmEnabled(boolean alarmEnabled) {
         this.alarmEnabled = alarmEnabled;
-        if (!alarmEnabled){
+        if (!alarmEnabled) {
             mp.stop();
+            vib.cancel();
         }
     }
 
@@ -195,84 +183,54 @@ public class TimerService extends Service {
                 myHandler.removeCallbacks(runnable);
             }
             setTimer(Integer.parseInt(duration) * 1000);
-        }
-        else{
+
+
+            long nextGPSUpdate = Integer.parseInt(duration) * 1000 / 3;
+
+            runnable = new Runnable() {
+
+                @Override
+                public void run() {
+                    if (!gpsHandler.requestGPSUpdates(10000)) {
+                        gpsProviderDisabled();
+                    }
+                }
+            };
+
+            myHandler.postDelayed(runnable, nextGPSUpdate - 10000);
+
+
+        } else {
             //timerTextView.setText("A server error occured. " + errorMsg);
         }
     }
 
-    private void setTimer(final long countTime){
+    private void setTimer(final long countTime) {
 
         this.timer = new CountDownTimer(countTime, 1000) {
 
-            long nextGPSUpdate = countTime;
-
             public void onTick(long millisUntilFinished) {
 
-                if (millisUntilFinished<nextGPSUpdate){
+                int totalSeconds = (int) millisUntilFinished / 1000;
 
-
-                    nextGPSUpdate = millisUntilFinished/2;
-
-                    if(!(hasSetGPSTo10000||hasSetGPSTo3000||hasSetGPSTo5000)) {
-                        runnable = new Runnable() {
-
-                            @Override
-                            public void run() {
-                                gpsHandler.requestGPSUpdates(10000);
-                            }
-                        };
-
-                        myHandler.postDelayed(runnable, nextGPSUpdate - 10000);
-                    }
-
-                }
-
-
-
-
-                int totalSeconds =  (int)millisUntilFinished/1000;
-
-                int hours =  (totalSeconds % 86400) / 3600;
+                int hours = (totalSeconds % 86400) / 3600;
                 int minutes = (totalSeconds % 3600) / 60;
                 int seconds = (totalSeconds % 60);
 
-                    try {
-                        Message message = new Message();
-                        message.arg1 = 1;
-                        String time;
-                        if(hours > 0){
-                            time = hours + " hours\n"  + minutes + " minutes\n" + seconds + " seconds!";
-                        }
-                        else if(minutes > 0){
-                            time = minutes + " minutes\n" + seconds + " seconds!";
-                        }
-                        else{
-                            time = seconds + " seconds!";
-                        }
-
-                        message.obj =  time;
-                        outMessenger.send(message);
-                    }catch(RemoteException e){
-
-                    }
+                String time;
+                if (hours > 0) {
+                    time = hours + " hours\n" + minutes + " minutes\n" + seconds + " seconds!";
+                } else if (minutes > 0) {
+                    time = minutes + " minutes\n" + seconds + " seconds!";
+                } else {
+                    time = seconds + " seconds!";
                 }
-
-
-
+                sendMessage(1, time);
+            }
 
 
             public void onFinish() {
-                try {
-                    Message message = new Message();
-                    message.arg1 = 1;
-                    message.obj =  "Done!";
-                    outMessenger.send(message);
-                }catch(RemoteException e){
-
-                }
-
-                //mp.start();
+                sendMessage(1, "Done!");
             }
         };
 
@@ -280,23 +238,32 @@ public class TimerService extends Service {
 
     }
 
-    public void gpsProviderDisabled(){
-        Message message = new Message();
-        message.arg1 = 3;
+    private void sendMessage(int code, String messageString) {
         try {
+            Message message = new Message();
+            message.arg1 = code;
+            message.obj = messageString;
             outMessenger.send(message);
-        }
-        catch (RemoteException e){
+        } catch (RemoteException e) {
 
         }
+    }
+
+    public void gpsProviderDisabled() {
+        sendMessage(3, "");
     }
 
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        System.out.println("Service got destroyed");
         myHandler.removeCallbacks(runnable);
-        timer.cancel();
+        if (timer != null) {
+            timer.cancel();
+        }
         gpsHandler.removeUpdates();
+        mp.stop();
+        vib.cancel();
     }
 }

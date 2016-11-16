@@ -32,7 +32,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".TranslinkUI" />
-        <activity android:name=".alarmTimer" />
+        <activity android:name=".alarmTimer"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity android:name=".ConnectDatabase" />
 
         <meta-data

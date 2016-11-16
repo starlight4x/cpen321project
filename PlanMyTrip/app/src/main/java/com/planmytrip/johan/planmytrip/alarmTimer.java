@@ -3,10 +3,12 @@ package com.planmytrip.johan.planmytrip;
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.CountDownTimer;
@@ -18,6 +20,7 @@ import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,29 +36,71 @@ public class alarmTimer extends AppCompatActivity {
 
     private TextView locationTextView;
     private TextView timerTextView;
-    boolean alarmEnabled = false;
-    private Intent intentFromLastActivity;
-
+    boolean alarmEnabled = true;
+    private Button stopAlarm;
 
 
     private TimerService myServiceBinder;
     public ServiceConnection myConnection = new ServiceConnection() {
 
+
         public void onServiceConnected(ComponentName className, IBinder binder) {
             myServiceBinder = ((TimerService.MyBinder) binder).getService();
-            Log.d("ServiceConnection","connected");
+            Log.d("ServiceConnection", "connected");
         }
 
         public void onServiceDisconnected(ComponentName className) {
-            Log.d("ServiceConnection","disconnected");
+            Log.d("ServiceConnection", "disconnected");
             myServiceBinder = null;
         }
     };
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        //Handles the setting up part for the class
+        super.onCreate(savedInstanceState);
+
+        Intent intentFromLastActivity = getIntent();
+        doBindService();
+        doStartService(intentFromLastActivity);
+        setContentView(R.layout.activity_alarm_timer);
+        timerTextView = (TextView) findViewById(R.id.textView3);
+        timerTextView.setText("Loading...");
+        locationTextView = (TextView) findViewById(R.id.locationTextView);
+
+        //Alarm configurations for setting and stopping it
+        stopAlarm = (Button) this.findViewById(R.id.button3);
+        stopAlarm.setText("Stop Alarm");
+        stopAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (alarmEnabled) {
+                    stopAlarm.setText("Set Alarm");
+                    alarmEnabled = false;
+                    System.out.println("onClick stop alarm");
+                    myServiceBinder.setAlarmEnabled(false);
+                } else {
+                    stopAlarm.setText("Stop Alarm");
+                    alarmEnabled = true;
+                    myServiceBinder.setAlarmEnabled(true);
+
+                }
+            }
+        });
+
+        LocationManager locationManagerContext = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        GPSchecker locationManager = new GPSchecker(locationManagerContext);
+        if (!locationManager.isLocationEnabled()) {
+            showAlert();
+        }
+
+
+    }
+
     public Handler myHandler1 = new Handler() {
         public void handleMessage(Message message) {
-            //Bundle data = message.getData();
-            switch (message.arg1){
+            switch (message.arg1) {
                 case 1:
                     updateClock(message);
                     break;
@@ -63,30 +108,44 @@ public class alarmTimer extends AppCompatActivity {
                     updateDistance(message);
                     break;
                 case 3:
-                    requestGPS();
+                    showAlert();
                     break;
+                case 4:
+                    serviceGotDestroyed();
                 default:
                     break;
             }
         }
     };
 
-    private void requestGPS(){
-        Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+    private void serviceGotDestroyed() {
+        alarmEnabled = false;
+        stopAlarm.setText("Set Alarm");
+        this.timerTextView.setText("Please set Alarm.");
+    }
+
+    private void doStopService() {
+
+        if (myServiceBinder != null) {
+            unbindService(myConnection);
+            myServiceBinder = null;
+        }
+        stopService(new Intent(this, TimerService.class));
+
     }
 
     public void doBindService() {
-        Intent intent = null;
-        intent = new Intent(this, TimerService.class);
+        Intent intent = new Intent(this, TimerService.class);
         Messenger messenger = new Messenger(myHandler1);
         intent.putExtra("MESSENGER", messenger);
         bindService(intent, myConnection, Context.BIND_AUTO_CREATE);
     }
 
-    public void doStartService(Intent timeIntent){
+    public void doStartService(Intent timeIntent) {
+
         Intent intent = new Intent(this, TimerService.class);
-        Stop start = (Stop)timeIntent.getSerializableExtra("startingStop");
-        Stop destination = (Stop)timeIntent.getSerializableExtra("destination");
+        Stop start = (Stop) timeIntent.getSerializableExtra("startingStop");
+        Stop destination = (Stop) timeIntent.getSerializableExtra("destination");
         String routeNo = timeIntent.getStringExtra("selRoute");
         intent.putExtra("startingStop", start);
         intent.putExtra("destination", destination);
@@ -95,7 +154,6 @@ public class alarmTimer extends AppCompatActivity {
         startService(intent);
 
     }
-
 
     @Override
     protected void onResume() {
@@ -117,60 +175,37 @@ public class alarmTimer extends AppCompatActivity {
         super.onPause();
     }
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        //Handles the setting up part for the class
-        super.onCreate(savedInstanceState);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET}
-                        , 10);
-            }
-        }
-
-        intentFromLastActivity  = getIntent();
-        doStartService(intentFromLastActivity);
-        doBindService();
-        setContentView(R.layout.activity_alarm_timer);
-        timerTextView = (TextView) findViewById(R.id.textView3);
-        timerTextView.setText("Loading...");
-        locationTextView = (TextView) findViewById(R.id.locationTextView);
-
-        //Alarm configurations for setting and stopping it
-        final Button stopAlarm = (Button) this.findViewById(R.id.button3);
-        stopAlarm.setText("Set Alarm");
-        stopAlarm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (alarmEnabled){
-                    stopAlarm.setText("Set Alarm");
-                    alarmEnabled = false;
-                    myServiceBinder.setAlarmEnabled(false);
-                }
-                else {
-                    stopAlarm.setText("Stop Alarm");
-                    alarmEnabled = true;
-                    myServiceBinder.setAlarmEnabled(true);
-                }
-            }
-        });
-
-
+    public void showAlert() {
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Enable Location")
+                .setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " +
+                        "use this app")
+                .setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(myIntent);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    }
+                });
+        dialog.show();
     }
 
-    public void updateClock(Message message){
-        timerTextView.setText((String)message.obj);
+    public void updateClock(Message message) {
+        timerTextView.setText((String) message.obj);
     }
 
-    public void updateDistance(Message message){
-        locationTextView.setText((String)message.obj);
+    public void updateDistance(Message message) {
+        locationTextView.setText((String) message.obj);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
+        switch (requestCode) {
             case 10:
                 System.out.println("In onRequestPermissionResult case 10");
                 break;
@@ -182,8 +217,9 @@ public class alarmTimer extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        stopService(new Intent(this,TimerService.class));
+        doStopService();
     }
+
 
 
 }

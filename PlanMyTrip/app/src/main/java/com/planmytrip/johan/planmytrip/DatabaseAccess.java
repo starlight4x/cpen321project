@@ -108,6 +108,10 @@ public class DatabaseAccess {
             return null;
         }
 
+        if(destination.charAt(0) == 'U' && destination.charAt(2) == 'B' && destination.charAt(4) == 'C'){
+            destination = "UBC";
+        }
+
         cursor = database.rawQuery("SELECT * FROM trips WHERE route_id=" + route_id + " AND trip_headsign LIKE '%" + destination + "%'", null);
         if (cursor != null) {
             try {
