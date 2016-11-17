@@ -196,20 +196,24 @@ public class TranslinkHandler {
     }
 
     private void getCoordinatesForStopReturned(JSONObject response, String errorMsg){
-
+        Stop stop = null;
         if(errorMsg == null) {
             try {
+                String name = response.getString("Name");
+                String stopCode = response.getString("StopNo");
                 String latitude = response.getString("Latitude");
                 String longitude = response.getString("Longitude");
-
+                stop = new Stop(null, stopCode, name, latitude, longitude);
                 //call someone who needs this information
             }
             catch(JSONException e){
                 System.out.print("Error parsing JSONArray" + e.toString());
             }
+            ((MainActivity)context).getStopInfo(stop, null);
         }
         else{
             System.out.println("TranslinkHandler: error getCoordinatesForStopReturned");
+            ((MainActivity)context).getStopInfo(null, errorMsg);
         }
     }
 

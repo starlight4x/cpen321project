@@ -247,7 +247,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
   @Override
     public boolean onQueryTextSubmit(String query){
       //initialize http request based on user's stopcode input
-     submitCode(query);
+     //submitCode(query);
+      findStopCode(query);
 
       return false;
   }
@@ -306,11 +307,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     //helper function that initializes an http request for buses based on user input
-    public void findDBStopCode(String code) {
+    public void findStopCode(String code) {
         if(code.length() == 5 && isInteger(code)){
             if (isNetworkAvailable()) {
                 stopNumber = code; //store the user's input in the global variable
-                //transHandler.getNextBuses(code); //initialize a get bus http request based on input
+                transHandler.getStopInfo(code); //initialize a get bus http request based on input
                 loadingPanel.setVisibility(View.VISIBLE); //set the loading wheel to visible
             }
             else {
@@ -340,6 +341,24 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             intent.putExtra("busStopNo", stopNumber); //store the stop number the user entered
             intent.putExtra("busList", result); //pass the array of buses that the http request returned
             startActivity(intent); //transition to the TranslinkUI activity
+        }
+    }
+
+    public void getStopInfo(Stop stop, String errorMsg) {
+        loadingPanel.setVisibility(View.GONE); //remove the loading wheel
+        if(errorMsg != null){
+            showError(errorMsg); //show the error returned by the request
+        }
+
+        else {
+            setSingleMarker(stop);
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(Double.parseDouble(stop.getLatitude()), Double.parseDouble(stop.getLongitude())))      // Sets the center of the map to Mountain View
+                    .zoom( 16 )
+                    .bearing( 0.0f )
+                    .tilt( 0.0f )                // Sets the tilt of the camera to 30 degrees
+                    .build();                   // Creates a CameraPosition from the builder
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }
 
