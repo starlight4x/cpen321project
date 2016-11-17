@@ -74,6 +74,7 @@ public class TimerService extends Service {
         if (extras != null) {
             Log.d("service", "onBind with extra");
             outMessenger = (Messenger) extras.get("MESSENGER");
+            System.out.println("TimerService Bind service");
 
         }
         return mBinder;
@@ -89,13 +90,14 @@ public class TimerService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction() == "clickOnIt"){
+                mp.stop();
+                vib.cancel();
                 sendMessage(UNBIND_SERVICE,"");
                 System.out.println("clickedOn it" + intent.toString());
-                Intent intent1 =
-                        getPackageManager().getLaunchIntentForPackage(getPackageName());
+                Intent intent1 = getPackageManager().getLaunchIntentForPackage(getPackageName());
                 intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent1.setComponent(new ComponentName("com.planmytrip.johan.planmytrip", "com.planmytrip.johan.planmytrip.alarmTimer"));
-                intent1.putExtra("clickedOnIt", "clickedOnIt");
+                intent1.putExtra("UserClickedOnPermanentNotification", "UserClickedOnPermanentNotification");
                 startActivity(intent1);
 
             }
@@ -175,6 +177,10 @@ public class TimerService extends Service {
         }
     }
 
+    public void setOutMessenger(Messenger messenger){
+        outMessenger = messenger;
+    }
+
     public void gotGPSUpdate(Location location) {
         System.out.println("gotGPSUpdate");
 
@@ -241,6 +247,7 @@ public class TimerService extends Service {
             mp.stop();
             vib.cancel();
         }
+        System.out.println("Change alarmEnabled");
     }
 
     public void estimatedTimeReturned(String duration, String errorMsg) {
@@ -332,7 +339,6 @@ public class TimerService extends Service {
     public void gpsProviderDisabled() {
         sendMessage(NO_GPS_CONNECTION, "");
     }
-
 
     @Override
     public void onDestroy() {

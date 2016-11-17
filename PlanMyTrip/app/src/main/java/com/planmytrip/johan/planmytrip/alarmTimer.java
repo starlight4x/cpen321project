@@ -47,6 +47,7 @@ public class alarmTimer extends AppCompatActivity {
         public void onServiceConnected(ComponentName className, IBinder binder) {
             myServiceBinder = ((TimerService.MyBinder) binder).getService();
             Log.d("ServiceConnection", "connected");
+            myServiceBinder.setOutMessenger(new Messenger(myHandler1));
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -65,13 +66,13 @@ public class alarmTimer extends AppCompatActivity {
 
         Intent intentFromLastActivity = getIntent();
 
-        if(intentFromLastActivity.hasExtra("clickedOnIt")){
+        if (!(intentFromLastActivity.hasExtra("UserClickedOnPermanentNotification"))) {
 
             doBindService();
+            doStartService(intentFromLastActivity);
         }
         else{
             doBindService();
-            doStartService(intentFromLastActivity);
         }
         setContentView(R.layout.activity_alarm_timer);
         timerTextView = (TextView) findViewById(R.id.textView3);
@@ -134,7 +135,7 @@ public class alarmTimer extends AppCompatActivity {
         timerTextView.setText("Done!");
     }
 
-    private void doUnbindService(){
+    private void doUnbindService() {
         if (myServiceBinder != null) {
             unbindService(myConnection);
             myServiceBinder = null;
@@ -155,7 +156,8 @@ public class alarmTimer extends AppCompatActivity {
         Intent intent = new Intent(this, TimerService.class);
         Messenger messenger = new Messenger(myHandler1);
         intent.putExtra("MESSENGER", messenger);
-        bindService(intent, myConnection, Context.BIND_AUTO_CREATE);
+        bindService(intent, myConnection, Context.BIND_IMPORTANT);
+        System.out.println("alarmTimer: doBindService");
     }
 
     public void doStartService(Intent timeIntent) {
@@ -167,8 +169,10 @@ public class alarmTimer extends AppCompatActivity {
         intent.putExtra("startingStop", start);
         intent.putExtra("destination", destination);
         intent.putExtra("selRoute", routeNo);
+        System.out.println("alarmTimer: doStartService1");
 
         startService(intent);
+        System.out.println("alarmTimer: doStartService2");
 
     }
 
@@ -178,6 +182,7 @@ public class alarmTimer extends AppCompatActivity {
         Log.d("activity", "onResume");
         if (myServiceBinder == null) {
             doBindService();
+            System.out.println("OnResume");
         }
         super.onResume();
     }
