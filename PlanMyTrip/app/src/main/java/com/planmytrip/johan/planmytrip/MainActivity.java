@@ -1,7 +1,11 @@
 package com.planmytrip.johan.planmytrip;
 
+import android.Manifest;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.location.Geocoder;
 import android.provider.Settings;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +32,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.view.Menu;
 
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -65,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    private DatabaseAccess databaseAccess;
 
     private final int[] MAP_TYPES = {
             GoogleMap.MAP_TYPE_SATELLITE,
@@ -298,6 +304,24 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
 
     }
+
+    //helper function that initializes an http request for buses based on user input
+    public void findDBStopCode(String code) {
+        if(code.length() == 5 && isInteger(code)){
+            if (isNetworkAvailable()) {
+                stopNumber = code; //store the user's input in the global variable
+                //transHandler.getNextBuses(code); //initialize a get bus http request based on input
+                loadingPanel.setVisibility(View.VISIBLE); //set the loading wheel to visible
+            }
+            else {
+                showError("NO NETWORK AVAILABLE"); //toast that no network is available
+            }
+        }
+        else{
+            showError("INVALID BUS STOP NUMBER");
+        }
+
+    }
     public void showError(String msg) {
         Context context = getApplicationContext();
         int duration = Toast.LENGTH_LONG;
@@ -334,11 +358,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     String lo = df.format(mLastLocation.getLongitude());
 
                     submitArea(la, lo);
-                    Toast.makeText(getApplicationContext(), la + " " + lo, Toast.LENGTH_LONG).show();
+                    String address = getAddressFromLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+                    Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
                 }
             } else {
                 //Toast.makeText(getApplicationContext(), "Please turn on Location Service", Toast.LENGTH_SHORT).show();
-                showAlert();
+                if(!locationManager.isLocationEnabled()){
+                    showAlert();
+                }
             }
 
         }
@@ -369,8 +396,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
        // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng( 49.2827, 123.1207), 10));
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        } else {
+            Toast.makeText(getApplicationContext(), "Cannot do this shit", Toast.LENGTH_SHORT).show();
+        }
         initListeners();
     }
+
+
 
     public void submitArea(String lat, String lon) {
         if (isNetworkAvailable()) {
@@ -392,16 +427,20 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private void setMarkers(ArrayList<Stop> result) {
         //Toast.makeText(getApplicationContext(), "blah", Toast.LENGTH_SHORT).show();
-        double a, b;
         for(int i = 0; i < result.size(); i++) {
-            a = Double.parseDouble(result.get(i).getLatitude());
-            b = Double.parseDouble(result.get(i).getLongitude());
-            MarkerOptions options = new MarkerOptions().position(new LatLng(a, b));
-            options.title(result.get(i).getStopCode()).snippet(result.get(i).getName());
-
-            options.icon(BitmapDescriptorFactory.defaultMarker());
-            mMap.addMarker(options);
+            setSingleMarker(result.get(i));
         }
+    }
+
+    private void setSingleMarker(Stop stop) {
+        double a, b;
+        a = Double.parseDouble(stop.getLatitude());
+        b = Double.parseDouble(stop.getLongitude());
+        MarkerOptions options = new MarkerOptions().position(new LatLng(a, b));
+        options.title(stop.getStopCode()).snippet(stop.getName());
+
+        options.icon(BitmapDescriptorFactory.defaultMarker());
+        mMap.addMarker(options);
     }
 
     @Override
@@ -440,6 +479,18 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private void initListeners() {
         mMap.setOnMarkerClickListener(this);
         mMap.setOnInfoWindowClickListener( this );
+    }
+
+    private String getAddressFromLatLng( LatLng latLng ) {
+        Geocoder geocoder = new Geocoder(this);
+
+        String address = "";
+        try {
+            address = geocoder.getFromLocation( latLng.latitude, latLng.longitude, 1 ).get( 0 ).getAddressLine( 0 );
+        } catch (IOException e ) {
+        }
+
+        return address;
     }
 
 

@@ -196,6 +196,7 @@ public class TranslinkHandler {
     }
 
     private void getCoordinatesForStopReturned(JSONObject response, String errorMsg){
+
         if(errorMsg == null) {
             try {
                 String latitude = response.getString("Latitude");
