@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private DatabaseAccess databaseAccess;
+    private ArrayList<Marker> markers;
 
     private final int[] MAP_TYPES = {
             GoogleMap.MAP_TYPE_SATELLITE,
@@ -95,10 +96,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                             locationManager = new GPSchecker(locationManagerContext);
                       }
 
+        /*
         if(!locationManager.isLocationEnabled()){
             showAlert();
         }
-
+*/
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 .addApi(LocationServices.API)
                 .build();
 
-
+        markers = new ArrayList<Marker>();
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -351,14 +353,33 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
 
         else {
-            setSingleMarker(stop);
+            LatLng coor = new LatLng(Double.parseDouble(stop.getLatitude()), Double.parseDouble(stop.getLongitude()));
+            String address = getAddressFromLatLng(coor);
+
+            int i = findMarker(stop.getStopCode());
+            if(i > 0) {
+                markers.get(i).showInfoWindow();
+
+            }
+            else {
+                setSingleMarker(stop);
+                int j = findMarker(stop.getStopCode());
+                markers.get(j).showInfoWindow();
+
+            }
+
+
+
+
+
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(Double.parseDouble(stop.getLatitude()), Double.parseDouble(stop.getLongitude())))      // Sets the center of the map to Mountain View
+                    .target(coor)      // Sets the center of the map to Mountain View
                     .zoom( 16 )
                     .bearing( 0.0f )
                     .tilt( 0.0f )                // Sets the tilt of the camera to 30 degrees
                     .build();                   // Creates a CameraPosition from the builder
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -449,6 +470,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         for(int i = 0; i < result.size(); i++) {
             setSingleMarker(result.get(i));
         }
+
     }
 
     private void setSingleMarker(Stop stop) {
@@ -459,7 +481,19 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         options.title(stop.getStopCode()).snippet(stop.getName());
 
         options.icon(BitmapDescriptorFactory.defaultMarker());
-        mMap.addMarker(options);
+        markers.add(mMap.addMarker(options));
+
+    }
+
+    private int findMarker(String title) {
+        for(int i = 0; i < markers.size(); i ++)
+        {
+            if(markers.get(i).getTitle().equals(title)) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     @Override
