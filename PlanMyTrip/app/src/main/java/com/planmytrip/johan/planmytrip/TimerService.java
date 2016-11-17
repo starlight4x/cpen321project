@@ -1,9 +1,15 @@
 package com.planmytrip.johan.planmytrip;
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.media.MediaPlayer;
 import android.os.Binder;
@@ -18,6 +24,7 @@ import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +39,12 @@ import java.util.Timer;
 
 public class TimerService extends Service {
 
+
+    final int UPDATE_TIME_TEXTVIEW = 1;
+    final int UPDATE_DISTANCE_TEXTVIEW = 2;
+    final int NO_GPS_CONNECTION = 3;
+    final int SERVICE_GOT_DESTROYED = 4;
+    final int UNBIND_SERVICE = 5;
 
     private MediaPlayer mp = new MediaPlayer();
     Vibrator vib;
@@ -48,6 +61,8 @@ public class TimerService extends Service {
     private boolean hasSetGPSTo3000 = false;
     boolean alarmEnabled = true;
 
+    NotificationManager notificationManager;
+    NotificationCompat.Builder notificationBuilder;
     private final IBinder mBinder = new MyBinder();
     private Messenger outMessenger;
 
@@ -70,6 +85,33 @@ public class TimerService extends Service {
         }
     }
 
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction() == "clickOnIt"){
+                sendMessage(UNBIND_SERVICE,"");
+                System.out.println("clickedOn it" + intent.toString());
+                Intent intent1 =
+                        getPackageManager().getLaunchIntentForPackage(getPackageName());
+                intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent1.setComponent(new ComponentName("com.planmytrip.johan.planmytrip", "com.planmytrip.johan.planmytrip.alarmTimer"));
+                intent1.putExtra("clickedOnIt", "clickedOnIt");
+                startActivity(intent1);
+
+            }
+            else {
+                unregisterReceiver(this);
+                doStopSelf();
+                System.out.println("Deleted Notification" + intent.toString());
+            }
+        }
+    };
+
+    private void doStopSelf(){
+        sendMessage(UNBIND_SERVICE,"");
+        stopSelf();
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -77,23 +119,43 @@ public class TimerService extends Service {
         Log.d("service", "onBind");
         // Get messager from the Activity
         if (extras != null) {
-            Log.d("service", "onBind with extra");
-            myHandler = new Handler();
-            gpsHandler = new GPSHandler(this);
-            vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            if(intent.getAction()== "continue"){
 
-            //Media Player to be used
-            mp = MediaPlayer.create(this, R.raw.sound);
+            }
+            else {
+                Log.d("service", "onBind with extra");
+                myHandler = new Handler();
+                gpsHandler = new GPSHandler(this);
+                vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-            Stop start = (Stop) intent.getSerializableExtra("startingStop");
-            Stop destination = (Stop) intent.getSerializableExtra("destination");
-            routeNo = intent.getStringExtra("selRoute");
-            destLat = Double.parseDouble(destination.getLatitude());
-            destLong = Double.parseDouble(destination.getLongitude());
+                //Media Player to be used
+                mp = MediaPlayer.create(this, R.raw.sound);
+
+                Stop start = (Stop) intent.getSerializableExtra("startingStop");
+                Stop destination = (Stop) intent.getSerializableExtra("destination");
+                routeNo = intent.getStringExtra("selRoute");
+                destLat = Double.parseDouble(destination.getLatitude());
+                destLong = Double.parseDouble(destination.getLongitude());
+
+                Intent intent1 = new Intent("delete");
+                PendingIntent deleteIntent = PendingIntent.getBroadcast(this, 0, intent1, 0);
+                registerReceiver(receiver, new IntentFilter("delete"));
+
+                Intent intent2 = new Intent("clickOnIt");
+                PendingIntent clickIntent = PendingIntent.getBroadcast(this, 0, intent2, 0);
+                registerReceiver(receiver, new IntentFilter("clickOnIt"));
 
 
-            new TranslinkHandler(this).getEstimatedTimeFromGoogle(start.getLatitude(), start.getLongitude(), destination.getLatitude(), destination.getLongitude(), "now");
+                notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationBuilder = new NotificationCompat.Builder(this)
+                        .setContentTitle("Time your trip")
+                        .setContentText("You've received new messages.")
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setDeleteIntent(deleteIntent)
+                        .setContentIntent(clickIntent);
 
+                new TranslinkHandler(this).getEstimatedTimeFromGoogle(start.getLatitude(), start.getLongitude(), destination.getLatitude(), destination.getLongitude(), "now");
+            }
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -101,9 +163,15 @@ public class TimerService extends Service {
 
     public void getNearestBusStopServingRouteReturned(String latitude, String longitude, String errorMsg) {
         if (errorMsg == null) {
+            sendMessage(UPDATE_DISTANCE_TEXTVIEW,"");
             new TranslinkHandler(this).getEstimatedTimeFromGoogle(latitude, longitude, String.valueOf(destLat), String.valueOf(destLong), "now");
         } else {
             System.out.println(errorMsg);
+            sendMessage(UPDATE_DISTANCE_TEXTVIEW, "No Internet Connection");
+            if (!gpsHandler.requestGPSUpdates(5000)) {
+                gpsProviderDisabled();
+            }
+
         }
     }
 
@@ -113,11 +181,19 @@ public class TimerService extends Service {
         double distance = gpsHandler.distance(destLat, location.getLatitude(), destLong, location.getLongitude());
 
         if (distance < 300) {
-            sendMessage(2, "Distance to destination: " + String.format("%.0f", distance) + " Meters");
+            sendMessage(UPDATE_DISTANCE_TEXTVIEW, "Distance to destination: " + String.format("%.0f", distance) + " Meters");
+            timer.cancel();
+            sendMessage(UPDATE_TIME_TEXTVIEW, "a few seconds");
+            runnable = new Runnable() {
 
-            if (runnable != null) {
-                myHandler.removeCallbacks(runnable);
-            }
+                @Override
+                public void run() {
+                    doStopSelf();
+                }
+            };
+
+            myHandler.postDelayed(runnable, 120000);
+
             if (!hasPlayedAlarm) {
                 if (alarmEnabled) {
                     mp.start();
@@ -132,11 +208,8 @@ public class TimerService extends Service {
                 hasSetGPSTo3000 = true;
             }
 
-        } else if (distance < 500) {
-            sendMessage(2, "Distance to destination: " + String.format("%.0f", distance) + " Meters");
-            if (runnable != null) {
-                myHandler.removeCallbacks(runnable);
-            }
+        } else if (distance < 600) {
+            sendMessage(UPDATE_DISTANCE_TEXTVIEW, "Distance to destination: " + String.format("%.0f", distance) + " Meters");
             if (!hasSetGPSTo5000) {
                 gpsHandler.removeUpdates();
                 gpsHandler.requestGPSUpdates(1000);
@@ -145,12 +218,9 @@ public class TimerService extends Service {
 
 
         } else if (distance < 1200) {
-            sendMessage(2, "Distance to destination: " + String.format("%.0f", distance) + " Meters");
+            sendMessage(UPDATE_DISTANCE_TEXTVIEW, "Distance to destination: " + String.format("%.0f", distance) + " Meters");
 
             gpsHandler.removeUpdates();
-            if (runnable != null) {
-                myHandler.removeCallbacks(runnable);
-            }
             if (!hasSetGPSTo10000) {
                 gpsHandler.requestGPSUpdates(3000);
                 hasSetGPSTo10000 = true;
@@ -175,13 +245,11 @@ public class TimerService extends Service {
 
     public void estimatedTimeReturned(String duration, String errorMsg) {
         if (errorMsg == null) {
+            sendMessage(UPDATE_DISTANCE_TEXTVIEW,"");
             if (timer != null) {
                 timer.cancel();
             }
             gpsHandler.removeUpdates();
-            if (runnable != null) {
-                myHandler.removeCallbacks(runnable);
-            }
             setTimer(Integer.parseInt(duration) * 1000);
 
 
@@ -201,6 +269,11 @@ public class TimerService extends Service {
 
 
         } else {
+            System.out.println(errorMsg + " query returned with error");
+            sendMessage(UPDATE_DISTANCE_TEXTVIEW, "No Internet Connection");
+            if (!gpsHandler.requestGPSUpdates(5000)) {
+                gpsProviderDisabled();
+            }
             //timerTextView.setText("A server error occured. " + errorMsg);
         }
     }
@@ -225,12 +298,12 @@ public class TimerService extends Service {
                 } else {
                     time = seconds + " seconds!";
                 }
-                sendMessage(1, time);
+                sendMessage(UPDATE_TIME_TEXTVIEW, time);
             }
 
 
             public void onFinish() {
-                sendMessage(1, "Done!");
+                sendMessage(UPDATE_TIME_TEXTVIEW, "Done!");
             }
         };
 
@@ -239,6 +312,13 @@ public class TimerService extends Service {
     }
 
     private void sendMessage(int code, String messageString) {
+        if(code == 1||code == 2){
+            notificationBuilder.setContentText(messageString);
+            notificationManager.notify(
+                    1,
+                    notificationBuilder.build());
+
+        }
         try {
             Message message = new Message();
             message.arg1 = code;
@@ -250,7 +330,7 @@ public class TimerService extends Service {
     }
 
     public void gpsProviderDisabled() {
-        sendMessage(3, "");
+        sendMessage(NO_GPS_CONNECTION, "");
     }
 
 
@@ -258,6 +338,7 @@ public class TimerService extends Service {
     public void onDestroy() {
         super.onDestroy();
         System.out.println("Service got destroyed");
+        sendMessage(SERVICE_GOT_DESTROYED, "");
         myHandler.removeCallbacks(runnable);
         if (timer != null) {
             timer.cancel();
@@ -265,5 +346,12 @@ public class TimerService extends Service {
         gpsHandler.removeUpdates();
         mp.stop();
         vib.cancel();
+        notificationManager.cancelAll();
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        System.out.println("onCreate TimerService");
     }
 }

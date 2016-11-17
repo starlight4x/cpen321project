@@ -58,12 +58,21 @@ public class alarmTimer extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        System.out.println("onCreateAlarmTimer");
+
         //Handles the setting up part for the class
         super.onCreate(savedInstanceState);
 
         Intent intentFromLastActivity = getIntent();
-        doBindService();
-        doStartService(intentFromLastActivity);
+
+        if(intentFromLastActivity.hasExtra("clickedOnIt")){
+
+            doBindService();
+        }
+        else{
+            doBindService();
+            doStartService(intentFromLastActivity);
+        }
         setContentView(R.layout.activity_alarm_timer);
         timerTextView = (TextView) findViewById(R.id.textView3);
         timerTextView.setText("Loading...");
@@ -112,6 +121,9 @@ public class alarmTimer extends AppCompatActivity {
                     break;
                 case 4:
                     serviceGotDestroyed();
+                case 5:
+                    doUnbindService();
+                    break;
                 default:
                     break;
             }
@@ -119,9 +131,14 @@ public class alarmTimer extends AppCompatActivity {
     };
 
     private void serviceGotDestroyed() {
-        alarmEnabled = false;
-        stopAlarm.setText("Set Alarm");
-        this.timerTextView.setText("Please set Alarm.");
+        timerTextView.setText("Done!");
+    }
+
+    private void doUnbindService(){
+        if (myServiceBinder != null) {
+            unbindService(myConnection);
+            myServiceBinder = null;
+        }
     }
 
     private void doStopService() {
@@ -168,10 +185,7 @@ public class alarmTimer extends AppCompatActivity {
     @Override
     protected void onPause() {
         Log.d("activity", "onPause");
-        if (myServiceBinder != null) {
-            unbindService(myConnection);
-            myServiceBinder = null;
-        }
+        doUnbindService();
         super.onPause();
     }
 
@@ -219,7 +233,5 @@ public class alarmTimer extends AppCompatActivity {
         super.onBackPressed();
         doStopService();
     }
-
-
 
 }

@@ -208,7 +208,7 @@ public class TranslinkHandler {
             }
         }
         else{
-            System.out.println("error");
+            System.out.println("TranslinkHandler: error getCoordinatesForStopReturned");
         }
     }
 
@@ -229,7 +229,7 @@ public class TranslinkHandler {
             ((TimerService)context).getNearestBusStopServingRouteReturned(latitude, longitude, null);
         }
         else{
-            System.out.println("error");
+            System.out.println("TranslinkHandler: error getNearestBusStopsReturned");
             ((TimerService)context).getNearestBusStopServingRouteReturned(null, null, errorMsg);
         }
     }
@@ -315,7 +315,12 @@ public class TranslinkHandler {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                translinkRequestResponded(inputID,null,null,String.valueOf(error.networkResponse.statusCode));
+                if(error.networkResponse != null) {
+                    translinkRequestResponded(inputID, null, null, String.valueOf(error.networkResponse.statusCode));
+                }
+                else{
+                    translinkRequestResponded(inputID, null, null, "No response");
+                }
             }
 
         };
