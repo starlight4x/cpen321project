@@ -86,7 +86,7 @@ public class DatabaseAccess {
     /**
      * Read all quotes from the database.
      *
-     * @return a List of quotes
+     * @return a List of bus stops along a route
      */
     public ArrayList<Stop> getStops(String route_num, String destination) {
         ArrayList<Stop> list = new ArrayList<Stop>();

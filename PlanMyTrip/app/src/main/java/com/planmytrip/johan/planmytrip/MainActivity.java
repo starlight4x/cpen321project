@@ -41,8 +41,11 @@ import android.graphics.Color;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -109,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 .addApi(LocationServices.API)
                 .build();
 
+        //databaseAccess = DatabaseAccess.getInstance(this);
+       // databaseAccess.open();
         markers = new ArrayList<Marker>();
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -319,6 +324,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             }
             else {
                 showError("NO NETWORK AVAILABLE"); //toast that no network is available
+                //loadingPanel.setVisibility(View.VISIBLE);
+                //offLineStops(code);
             }
         }
         else{
@@ -326,6 +333,41 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
 
     }
+
+    public void offLineStops(String code) {
+        Stop stop = databaseAccess.getOriginalStop(code);
+        //String address = "";
+        if(stop != null) {
+            LatLng coor = new LatLng(Double.parseDouble(stop.getLatitude()), Double.parseDouble(stop.getLongitude()));
+            String address = getAddressFromLatLng(coor);
+
+            int i = findMarker(stop.getStopCode());
+            if(i > 0) {
+                markers.get(i).showInfoWindow();
+
+            }
+            else {
+                setSingleMarker(stop);
+                int j = findMarker(stop.getStopCode());
+                markers.get(j).showInfoWindow();
+
+            }
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(coor)      // Sets the center of the map to Mountain View
+                    .zoom( 17 )
+                    .bearing( 0.0f )
+                    .tilt( 0.0f )                // Sets the tilt of the camera to 30 degrees
+                    .build();                   // Creates a CameraPosition from the builder
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "Cannot Find Stop in Database", Toast.LENGTH_SHORT).show();
+        }
+        loadingPanel.setVisibility(View.GONE);
+
+    }
+
     public void showError(String msg) {
         Context context = getApplicationContext();
         int duration = Toast.LENGTH_LONG;
@@ -340,6 +382,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             showError(errorMsg); //show the error returned by the request
         }
         else {
+           // databaseAccess.close();
             Intent intent = new Intent(this, TranslinkUI.class); //pass the intent to TranslinkUI class
             intent.putExtra("busStopNo", stopNumber); //store the stop number the user entered
             intent.putExtra("busList", result); //pass the array of buses that the http request returned
@@ -375,7 +418,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(coor)      // Sets the center of the map to Mountain View
-                    .zoom( 16 )
+                    .zoom( 18f )
                     .bearing( 0.0f )
                     .tilt( 0.0f )                // Sets the tilt of the camera to 30 degrees
                     .build();                   // Creates a CameraPosition from the builder
@@ -387,8 +430,22 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         //------------------------------MAP STUFF (JAMES) ---------------------------------------------//
         @Override
         public void onConnected(Bundle bundle) {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            /*
+            LocationRequest mLocationRequest = new LocationRequest();
+            mLocationRequest.setInterval(10000);
+            mLocationRequest.setFastestInterval(5000);
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                    .addLocationRequest(mLocationRequest);
+
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (com.google.android.gms.location.LocationListener) this);
+            }
+            */
+
             if (mLastLocation != null) {
                 //Toast.makeText(getApplicationContext(), mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
                 initCamera(mLastLocation);
@@ -408,6 +465,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     showAlert();
                 }
             }
+
 
         }
 
